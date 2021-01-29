@@ -1,0 +1,10 @@
+.table-grid {
+  width: 100%;
+  height: calc(100vh - 64px);
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+td {
+  border-collapse: collapse;
+}
