@@ -1,6 +1,5 @@
 import React from "react";
 
-import ToolBar from "../ToolBar/ToolBar";
 import Pathfinder from "./Pathfinder/Pathfinder";
 import "./visualizer.css";
 

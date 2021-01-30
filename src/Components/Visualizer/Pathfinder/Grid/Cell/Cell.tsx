@@ -38,24 +38,6 @@ const Cell: React.FC<IProps> = React.memo(
 
     const [hoverGreen, setHoverGreen] = React.useState<boolean>(false);
     const [hoverRed, setHoverRed] = React.useState<boolean>(false);
-    // const [isStartNode, setIsStartNode] = React.useState<boolean>(false);
-    // const [isEndNode, setIsEndNode] = React.useState<boolean>(false);
-
-    // React.useEffect(() => {
-    //   if (coordinates.x === startNode.x && coordinates.y === startNode.y) {
-    //     setIsStartNode(true);
-    //   } else {
-    //     setIsStartNode(false);
-    //   }
-    // }, [coordinates, startNode]);
-
-    // React.useEffect(() => {
-    //   if (coordinates.x === endNode.x && coordinates.y === endNode.y) {
-    //     setIsEndNode(true);
-    //   } else {
-    //     setIsEndNode(false);
-    //   }
-    // }, [coordinates, endNode]);
 
     var isStartNode =
       coordinates.x === startNode.x && coordinates.y === startNode.y;

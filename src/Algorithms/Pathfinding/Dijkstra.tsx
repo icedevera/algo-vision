@@ -91,8 +91,8 @@ const Dijkstra = ({ startNode, endNode, screenSize }: IProps) => {
     let children: Children = {};
 
     //get coordinates by destructuring string
-    let x = parseInt(node.substring(0, node.indexOf("-")));
-    let y = parseInt(node.substring(node.indexOf("-") + 1, node.length));
+    let x = parseInt(node.split("-")[0]);
+    let y = parseInt(node.split("-")[1]);
 
     //top
     if (y - 1 >= 0) {
@@ -143,28 +143,32 @@ const Dijkstra = ({ startNode, endNode, screenSize }: IProps) => {
     parent = parents[parent];
   }
 
-  const dijkstrasResult = {
-    distance: distances[`${endNode.x}-${endNode.y}`],
-    path: optimalPath,
-  };
+  // const dijkstrasResult = {
+  //   distance: distances[`${endNode.x}-${endNode.y}`],
+  //   path: optimalPath,
+  // };
 
-  console.log(dijkstrasResult);
-
+  //now for the fun part
+  //handle animation & visualization of dijkstra's algorithm!
   function animateDijkstra(analyze: string[], optimalPath: string[]) {
     for (let i = 0; i <= analyze.length; i++) {
       if (i === analyze.length) {
         setTimeout(() => {
           animateShortestPath(optimalPath);
-        }, 5 * i);
+        }, 10 * i);
         return;
       }
       setTimeout(() => {
         const node = analyze[i];
-        if (document.getElementById(node)) {
+        if (
+          document.getElementById(node) &&
+          node !== `${startNode.x}-${startNode.y}` &&
+          node !== `${endNode.x}-${endNode.y}`
+        ) {
           //@ts-ignore
           document.getElementById(node).className = "cell-node analyzing";
         }
-      }, 5 * i);
+      }, 10 * i);
     }
   }
 
@@ -172,11 +176,15 @@ const Dijkstra = ({ startNode, endNode, screenSize }: IProps) => {
     for (let i = 0; i < optimalPath.length; i++) {
       setTimeout(() => {
         const node = optimalPath[i];
-        if (document.getElementById(node)) {
+        if (
+          document.getElementById(node) &&
+          node !== `${startNode.x}-${startNode.y}` &&
+          node !== `${endNode.x}-${endNode.y}`
+        ) {
           //@ts-ignore
           document.getElementById(node).className = "cell-node shortest-path";
         }
-      }, 15 * i);
+      }, 50 * i);
     }
   }
 

@@ -19,7 +19,13 @@ interface IProps {
 }
 
 const Grid: React.FC<IProps> = React.memo(
-  ({ screenSize, startNode, endNode, setStartNode, setEndNode }) => {
+  ({
+    screenSize,
+    startNode,
+    endNode,
+    setStartNode,
+    setEndNode,
+  }) => {
     const [
       isStartNodeDragging,
       setIsStartNodeDragging,

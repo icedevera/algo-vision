@@ -6,6 +6,7 @@ import Fab from "@material-ui/core/Fab";
 import { makeStyles } from "@material-ui/core/styles";
 import { PlayArrow } from "@material-ui/icons";
 import Dijkstra from "../../../Algorithms/Pathfinding/Dijkstra";
+import { useTheme } from "@material-ui/core/styles";
 
 interface IProps {
   isDarkMode: boolean;
@@ -24,6 +25,12 @@ const useStyles = makeStyles((theme) => ({
     bottom: "40px",
     right: "40px",
   },
+  fab: {
+    backgroundColor: theme.palette.warning.main,
+  },
+  play: {
+    color: "white",
+  },
 }));
 
 const Pathfinder: React.FC<IProps> = ({
@@ -31,6 +38,7 @@ const Pathfinder: React.FC<IProps> = ({
   isDarkMode,
   toggleDarkMode,
 }) => {
+  const theme = useTheme();
   const classes = useStyles();
 
   const [startNode, setStartNode] = React.useState<coordinates>({
@@ -43,7 +51,48 @@ const Pathfinder: React.FC<IProps> = ({
     y: Math.round(screenSize.height / 22 / 2.5),
   });
 
-  const refreshNodes = () => {
+  const clearGrid = () => {
+    let analyzing = document.getElementsByClassName("analyzing");
+    let shortestPath = document.getElementsByClassName("shortest-path");
+    while (analyzing.length)
+      analyzing[0].className = analyzing[0].className.replace(
+        /\banalyzing\b/g,
+        `${theme.palette.type}-node`
+      );
+    while (shortestPath.length)
+      shortestPath[0].className = shortestPath[0].className.replace(
+        /\bshortest-path\b/g,
+        `${theme.palette.type}-node`
+      );
+    //@ts-ignore
+    document.getElementById(`${startNode.x}-${startNode.y}`).className =
+      "cell-node green";
+    //@ts-ignore
+    document.getElementById(`${endNode.x}-${endNode.y}`).className =
+      "cell-node red";
+  };
+
+  const resetGrid = () => {
+    if (
+      startNode.x !== Math.round(screenSize.width / 22 / 3) &&
+      startNode.y !== Math.round(screenSize.height / 22 / 2.5)
+    ) {
+      //@ts-ignore
+      document.getElementById(
+        `${startNode.x}-${startNode.y}`
+      ).className = `cell-node ${theme.palette.type}-node`;
+    }
+
+    if (
+      endNode.x !== Math.round(screenSize.width / 22 / 1.5) &&
+      endNode.y !== Math.round(screenSize.height / 22 / 2.5)
+    ) {
+      //@ts-ignore
+      document.getElementById(
+        `${endNode.x}-${endNode.y}`
+      ).className = `cell-node ${theme.palette.type}-node`;
+    }
+
     setStartNode({
       x: Math.round(screenSize.width / 22 / 3),
       y: Math.round(screenSize.height / 22 / 2.5),
@@ -54,15 +103,7 @@ const Pathfinder: React.FC<IProps> = ({
     });
   };
 
-  const refreshAnalysis = () => {};
-
-  const refresh = () => {
-    refreshNodes();
-    refreshAnalysis();
-  };
-
   const runAlgorithm = () => {
-    refreshAnalysis();
     Dijkstra({
       screenSize,
       startNode,
@@ -75,7 +116,8 @@ const Pathfinder: React.FC<IProps> = ({
       <ToolBar
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
-        refresh={refresh}
+        resetGrid={resetGrid}
+        clearGrid={clearGrid}
       />
       <div>
         <Grid
@@ -86,8 +128,8 @@ const Pathfinder: React.FC<IProps> = ({
           setEndNode={setEndNode}
         />
         <div className={classes.runAlgorithm}>
-          <Fab onClick={runAlgorithm} color="primary">
-            <PlayArrow />
+          <Fab onClick={runAlgorithm} className={classes.fab}>
+            <PlayArrow className={classes.play} />
           </Fab>
         </div>
       </div>
