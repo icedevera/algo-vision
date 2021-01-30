@@ -19,6 +19,10 @@ interface IProps {
   setIsStartNodeDragging: React.Dispatch<any>;
   isEndNodeDragging: boolean;
   setIsEndNodeDragging: React.Dispatch<any>;
+  setBarriers: React.Dispatch<any>;
+  addingBarriers: boolean;
+  mouseDown: boolean;
+  setMouseDown: React.Dispatch<any>;
 }
 
 const Cell: React.FC<IProps> = React.memo(
@@ -33,11 +37,17 @@ const Cell: React.FC<IProps> = React.memo(
     setIsStartNodeDragging,
     isEndNodeDragging,
     setIsEndNodeDragging,
+    setBarriers,
+    addingBarriers,
+    mouseDown,
+    setMouseDown
   }) => {
     const theme = useTheme();
 
     const [hoverGreen, setHoverGreen] = React.useState<boolean>(false);
     const [hoverRed, setHoverRed] = React.useState<boolean>(false);
+    const [isBarrier, setIsBarrier] = React.useState<boolean>(false);
+
 
     var isStartNode =
       coordinates.x === startNode.x && coordinates.y === startNode.y;
@@ -52,6 +62,16 @@ const Cell: React.FC<IProps> = React.memo(
       if (isEndNode && !isEndNodeDragging) {
         setIsEndNodeDragging(true);
       }
+
+      if (addingBarriers && !isStartNode && !isEndNode) {
+        setMouseDown(true);
+        setIsBarrier(true);
+        setBarriers((prev: string[]) => [
+          ...prev,
+          `${coordinates.x}-${coordinates.y}`,
+        ]);
+      }
+
       return;
     };
 
@@ -61,6 +81,13 @@ const Cell: React.FC<IProps> = React.memo(
       }
       if (isEndNodeDragging) {
         setHoverRed(true);
+      }
+      if (addingBarriers && mouseDown && !isStartNode && !isEndNode) {
+        setIsBarrier(true);
+        setBarriers((prev: string[]) => [
+          ...prev,
+          `${coordinates.x}-${coordinates.y}`,
+        ]);
       }
       return;
     };
@@ -85,6 +112,9 @@ const Cell: React.FC<IProps> = React.memo(
         setIsEndNodeDragging(false);
         setEndNode(coordinates);
       }
+      if (addingBarriers && mouseDown) {
+        setMouseDown(false);
+      }
       return;
     };
 
@@ -106,6 +136,8 @@ const Cell: React.FC<IProps> = React.memo(
             ? "green"
             : isEndNode || hoverRed
             ? "red"
+            : isBarrier
+            ? "barrier-node"
             : `${theme.palette.type}-node`
         }`}
         onMouseDown={handleMouseDown}

@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import Visualizer from "./Components/Visualizer/Visualizer";
-import { Grid, Typography, Paper } from "@material-ui/core";
+import { Grid, Paper } from "@material-ui/core";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import "@fontsource/roboto";
 

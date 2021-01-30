@@ -7,9 +7,10 @@ interface IProps {
   startNode: coordinates;
   endNode: coordinates;
   screenSize: { width: number; height: number };
+  barriers: string[];
 }
 
-const Dijkstra = ({ startNode, endNode, screenSize }: IProps) => {
+const Dijkstra = ({ startNode, endNode, screenSize, barriers }: IProps) => {
   type Distances = {
     [node: string]: number;
   };
@@ -58,17 +59,29 @@ const Dijkstra = ({ startNode, endNode, screenSize }: IProps) => {
 
   //track paths taking into account the borders of the table
   var parents: Parents = { [`${endNode.x}-${endNode.y}`]: null };
-  if (startNode.y - 1 >= 0) {
+  if (
+    startNode.y - 1 >= 0 &&
+    !barriers.includes(`${startNode.x}-${startNode.y - 1}`)
+  ) {
     parents[`${startNode.x}-${startNode.y - 1}`] = "start";
   } else {
   }
-  if (startNode.x + 1 < Math.floor(screenSize.width / 22)) {
+  if (
+    startNode.x + 1 < Math.floor(screenSize.width / 22) &&
+    !barriers.includes(`${startNode.x + 1}-${startNode.y}`)
+  ) {
     parents[`${startNode.x + 1}-${startNode.y}`] = "start";
   }
-  if (startNode.y + 1 < Math.floor((screenSize.height - 64) / 22)) {
+  if (
+    startNode.y + 1 < Math.floor((screenSize.height - 64) / 22) &&
+    !barriers.includes(`${startNode.x}-${startNode.y + 1}`)
+  ) {
     parents[`${startNode.x}-${startNode.y + 1}`] = "start";
   }
-  if (startNode.x - 1 >= 0) {
+  if (
+    startNode.x - 1 >= 0 &&
+    !barriers.includes(`${startNode.x - 1}-${startNode.y}`)
+  ) {
     parents[`${startNode.x - 1}-${startNode.y}`] = "start";
   }
 
@@ -95,19 +108,25 @@ const Dijkstra = ({ startNode, endNode, screenSize }: IProps) => {
     let y = parseInt(node.split("-")[1]);
 
     //top
-    if (y - 1 >= 0) {
+    if (y - 1 >= 0 && !barriers.includes(`${x}-${y - 1}`)) {
       children[`${x}-${y - 1}`] = 1;
     }
     //right
-    if (x + 1 < Math.floor(screenSize.width / 22)) {
+    if (
+      x + 1 < Math.floor(screenSize.width / 22) &&
+      !barriers.includes(`${x + 1}-${y}`)
+    ) {
       children[`${x + 1}-${y}`] = 1;
     }
     //bottom
-    if (y + 1 < Math.floor((screenSize.height - 64) / 22)) {
+    if (
+      y + 1 < Math.floor((screenSize.height - 64) / 22) &&
+      !barriers.includes(`${x}-${y + 1}`)
+    ) {
       children[`${x}-${y + 1}`] = 1;
     }
     //left
-    if (x - 1 > 0) {
+    if (x - 1 > 0 && !barriers.includes(`${x - 1}-${y}`)) {
       children[`${x - 1}-${y}`] = 1;
     }
 
@@ -132,7 +151,7 @@ const Dijkstra = ({ startNode, endNode, screenSize }: IProps) => {
     }
   }
 
-  //now that we looped through each node and found the shortest distance through each we can now find the optimal path through a final function that looks through the parent object
+  //now that we looped through each node and found the shortest distance through each, we can now find the optimal path through a final function that looks through the parent object
 
   let optimalPath = [`${endNode.x}-${endNode.y}`];
   let parent = parents[`${endNode.x}-${endNode.y}`];

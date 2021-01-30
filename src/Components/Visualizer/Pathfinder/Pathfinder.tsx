@@ -33,108 +33,139 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Pathfinder: React.FC<IProps> = ({
-  screenSize,
-  isDarkMode,
-  toggleDarkMode,
-}) => {
-  const theme = useTheme();
-  const classes = useStyles();
+const Pathfinder: React.FC<IProps> = React.memo(
+  ({ screenSize, isDarkMode, toggleDarkMode }) => {
+    const theme = useTheme();
+    const classes = useStyles();
 
-  const [startNode, setStartNode] = React.useState<coordinates>({
-    x: Math.round(screenSize.width / 22 / 3),
-    y: Math.round(screenSize.height / 22 / 2.5),
-  });
-
-  const [endNode, setEndNode] = React.useState<coordinates>({
-    x: Math.round(screenSize.width / 22 / 1.5),
-    y: Math.round(screenSize.height / 22 / 2.5),
-  });
-
-  const clearGrid = () => {
-    let analyzing = document.getElementsByClassName("analyzing");
-    let shortestPath = document.getElementsByClassName("shortest-path");
-    while (analyzing.length)
-      analyzing[0].className = analyzing[0].className.replace(
-        /\banalyzing\b/g,
-        `${theme.palette.type}-node`
-      );
-    while (shortestPath.length)
-      shortestPath[0].className = shortestPath[0].className.replace(
-        /\bshortest-path\b/g,
-        `${theme.palette.type}-node`
-      );
-    //@ts-ignore
-    document.getElementById(`${startNode.x}-${startNode.y}`).className =
-      "cell-node green";
-    //@ts-ignore
-    document.getElementById(`${endNode.x}-${endNode.y}`).className =
-      "cell-node red";
-  };
-
-  const resetGrid = () => {
-    if (
-      startNode.x !== Math.round(screenSize.width / 22 / 3) &&
-      startNode.y !== Math.round(screenSize.height / 22 / 2.5)
-    ) {
-      //@ts-ignore
-      document.getElementById(
-        `${startNode.x}-${startNode.y}`
-      ).className = `cell-node ${theme.palette.type}-node`;
-    }
-
-    if (
-      endNode.x !== Math.round(screenSize.width / 22 / 1.5) &&
-      endNode.y !== Math.round(screenSize.height / 22 / 2.5)
-    ) {
-      //@ts-ignore
-      document.getElementById(
-        `${endNode.x}-${endNode.y}`
-      ).className = `cell-node ${theme.palette.type}-node`;
-    }
-
-    setStartNode({
+    const [startNode, setStartNode] = React.useState<coordinates>({
       x: Math.round(screenSize.width / 22 / 3),
       y: Math.round(screenSize.height / 22 / 2.5),
     });
-    setEndNode({
+
+    const [endNode, setEndNode] = React.useState<coordinates>({
       x: Math.round(screenSize.width / 22 / 1.5),
       y: Math.round(screenSize.height / 22 / 2.5),
     });
-  };
 
-  const runAlgorithm = () => {
-    Dijkstra({
-      screenSize,
-      startNode,
-      endNode,
-    });
-  };
+    const [addingBarriers, setAddingBarriers] = React.useState<boolean>(false);
+    const [barriers, setBarriers] = React.useState<string[]>([]);
 
-  return (
-    <>
-      <ToolBar
-        isDarkMode={isDarkMode}
-        toggleDarkMode={toggleDarkMode}
-        resetGrid={resetGrid}
-        clearGrid={clearGrid}
-      />
-      <div>
-        <Grid
-          screenSize={screenSize}
-          startNode={startNode}
-          endNode={endNode}
-          setStartNode={setStartNode}
-          setEndNode={setEndNode}
+    React.useEffect(() => {
+      console.log(barriers);
+    }, [barriers]);
+
+    const toggleAddingBarriers = () => [setAddingBarriers(!addingBarriers)];
+
+    const clearGrid = () => {
+      let analyzing = document.getElementsByClassName("analyzing");
+      let shortestPath = document.getElementsByClassName("shortest-path");
+
+      while (analyzing.length)
+        analyzing[0].className = analyzing[0].className.replace(
+          /\banalyzing\b/g,
+          `${theme.palette.type}-node`
+        );
+      while (shortestPath.length)
+        shortestPath[0].className = shortestPath[0].className.replace(
+          /\bshortest-path\b/g,
+          `${theme.palette.type}-node`
+        );
+
+      //@ts-ignore
+      document.getElementById(`${startNode.x}-${startNode.y}`).className =
+        "cell-node green";
+      //@ts-ignore
+      document.getElementById(`${endNode.x}-${endNode.y}`).className =
+        "cell-node red";
+    };
+
+    const clearBarriers = () => {
+      let barrierNodes = document.getElementsByClassName("barrier-node");
+      while (barrierNodes.length)
+        barrierNodes[0].className = barrierNodes[0].className.replace(
+          /\bbarrier-node\b/g,
+          `${theme.palette.type}-node`
+        );
+      setBarriers([]);
+    };
+
+    const resetGrid = () => {
+      clearGrid();
+      if (
+        startNode.x !== Math.round(screenSize.width / 22 / 3) &&
+        startNode.y !== Math.round(screenSize.height / 22 / 2.5)
+      ) {
+        //@ts-ignore
+        document.getElementById(
+          `${startNode.x}-${startNode.y}`
+        ).className = `cell-node ${theme.palette.type}-node`;
+      }
+
+      if (
+        endNode.x !== Math.round(screenSize.width / 22 / 1.5) &&
+        endNode.y !== Math.round(screenSize.height / 22 / 2.5)
+      ) {
+        //@ts-ignore
+        document.getElementById(
+          `${endNode.x}-${endNode.y}`
+        ).className = `cell-node ${theme.palette.type}-node`;
+      }
+
+      setStartNode({
+        x: Math.round(screenSize.width / 22 / 3),
+        y: Math.round(screenSize.height / 22 / 2.5),
+      });
+      setEndNode({
+        x: Math.round(screenSize.width / 22 / 1.5),
+        y: Math.round(screenSize.height / 22 / 2.5),
+      });
+    };
+
+    const cleanGrid = () => {
+      clearGrid();
+      clearBarriers();
+    };
+
+    const runAlgorithm = () => {
+      clearGrid();
+      Dijkstra({
+        screenSize,
+        startNode,
+        endNode,
+        barriers,
+      });
+    };
+
+    return (
+      <>
+        <ToolBar
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+          resetGrid={resetGrid}
+          cleanGrid={cleanGrid}
+          toggleAddingBarriers={toggleAddingBarriers}
+          addingBarriers={addingBarriers}
         />
-        <div className={classes.runAlgorithm}>
-          <Fab onClick={runAlgorithm} className={classes.fab}>
-            <PlayArrow className={classes.play} />
-          </Fab>
+        <div>
+          <Grid
+            screenSize={screenSize}
+            startNode={startNode}
+            endNode={endNode}
+            setStartNode={setStartNode}
+            setEndNode={setEndNode}
+            setBarriers={setBarriers}
+            addingBarriers={addingBarriers}
+          />
+          <div className={classes.runAlgorithm}>
+            <Fab onClick={runAlgorithm} className={classes.fab}>
+              <PlayArrow className={classes.play} />
+            </Fab>
+          </div>
         </div>
-      </div>
-    </>
-  );
-};
+      </>
+    );
+  }
+);
 
 export default Pathfinder;

@@ -20,6 +20,10 @@
   background-color: #fff;
 }
 
+.barrier-node {
+  background-color: #9c27b0;
+}
+
 .cell-node:hover {
   transform: scale(1.4);
 }

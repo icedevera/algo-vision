@@ -1,3 +1,4 @@
+import React from 'react'
 import "./toolbar.css";
 import {
   createStyles,
@@ -13,13 +14,16 @@ import {
   Brightness4,
   Brightness7,
   BorderClear,
+  Stop,
 } from "@material-ui/icons";
 
 interface IProps {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
-  clearGrid: () => void;
+  cleanGrid: () => void;
   resetGrid: () => void;
+  toggleAddingBarriers: () => void;
+  addingBarriers: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -39,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
           ? theme.palette.background.default
           : "#1976d2",
     },
-    refresh: {
+    button: {
       color:
         theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
     },
@@ -50,49 +54,60 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const ToolBar: React.FC<IProps> = ({
-  isDarkMode,
-  toggleDarkMode,
-  resetGrid,
-  clearGrid,
-}) => {
-  const theme = useTheme();
-  const classes = useStyles(theme);
+const ToolBar: React.FC<IProps> = React.memo(
+  ({
+    isDarkMode,
+    toggleDarkMode,
+    resetGrid,
+    cleanGrid,
+    toggleAddingBarriers,
+    addingBarriers,
+  }) => {
+    const theme = useTheme();
+    const classes = useStyles(theme);
 
-  return (
-    <div className={classes.root}>
-      <AppBar position="static" className={classes.appBar} color="default">
-        <Toolbar>
-          <div className="app-bar">
-            <Typography variant="h6" className={classes.title}>
-              Algorithm Visualizer
-            </Typography>
-            <button onClick={clearGrid} className="refresh-algorithm">
-              <BorderClear className={classes.refresh} fontSize="large" />
-            </button>
-            <button onClick={resetGrid} className="refresh-algorithm">
-              <Refresh className={classes.refresh} fontSize="large" />
-            </button>
-            <button onClick={toggleDarkMode} className="light-switch">
-              {isDarkMode ? (
-                <Brightness7
+    return (
+      <div className={classes.root}>
+        <AppBar position="static" className={classes.appBar} color="default">
+          <Toolbar>
+            <div className="app-bar">
+              <Typography variant="h6" className={classes.title}>
+                Algorithm Visualizer
+              </Typography>
+              <button onClick={toggleAddingBarriers} className="toolbar-button">
+                <Stop
+                  className={classes.button}
                   fontSize="large"
-                  color="inherit"
-                  className={classes.darkSwitch}
+                  style={{ color: addingBarriers ? "yellow" : "white" }}
                 />
-              ) : (
-                <Brightness4
-                  fontSize="large"
-                  color="primary"
-                  className={classes.darkSwitch}
-                />
-              )}
-            </button>
-          </div>
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
-};
+              </button>
+              <button onClick={cleanGrid} className="toolbar-button">
+                <BorderClear className={classes.button} fontSize="large" />
+              </button>
+              <button onClick={resetGrid} className="toolbar-button">
+                <Refresh className={classes.button} fontSize="large" />
+              </button>
+              <button onClick={toggleDarkMode} className="light-switch">
+                {isDarkMode ? (
+                  <Brightness7
+                    fontSize="large"
+                    color="inherit"
+                    className={classes.darkSwitch}
+                  />
+                ) : (
+                  <Brightness4
+                    fontSize="large"
+                    color="primary"
+                    className={classes.darkSwitch}
+                  />
+                )}
+              </button>
+            </div>
+          </Toolbar>
+        </AppBar>
+      </div>
+    );
+  }
+);
 
 export default ToolBar;

@@ -16,6 +16,8 @@ interface IProps {
     width: number;
     height: number;
   };
+  setBarriers: React.Dispatch<any>;
+  addingBarriers: boolean;
 }
 
 const Grid: React.FC<IProps> = React.memo(
@@ -25,6 +27,8 @@ const Grid: React.FC<IProps> = React.memo(
     endNode,
     setStartNode,
     setEndNode,
+    setBarriers,
+    addingBarriers,
   }) => {
     const [
       isStartNodeDragging,
@@ -33,6 +37,8 @@ const Grid: React.FC<IProps> = React.memo(
     const [isEndNodeDragging, setIsEndNodeDragging] = React.useState<boolean>(
       false
     );
+
+    const [mouseDown, setMouseDown] = React.useState<boolean>(false);
 
     const generateGrid = () => {
       const grid = [];
@@ -56,6 +62,10 @@ const Grid: React.FC<IProps> = React.memo(
                 endNode={endNode}
                 setEndNode={setEndNode}
                 coordinates={{ x: j, y: i }}
+                setBarriers={setBarriers}
+                addingBarriers={addingBarriers}
+                mouseDown={mouseDown}
+                setMouseDown={setMouseDown}
               />
             </td>
           );
