@@ -5,6 +5,19 @@
   align-items: center;
 }
 
+.refresh-algorithm {
+  outline: none;
+  margin-right: 15px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.05s ease;
+}
+
+.refresh-algorithm:active {
+  transform: scale(1.2);
+}
+
 .dark-mode-switch {
   width: 150px;
   display: flex;

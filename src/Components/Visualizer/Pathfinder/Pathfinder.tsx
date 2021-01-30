@@ -1,12 +1,15 @@
 import React from "react";
 
 import Grid from "./Grid/Grid";
+import ToolBar from "../../ToolBar/ToolBar";
 import Fab from "@material-ui/core/Fab";
 import { makeStyles } from "@material-ui/core/styles";
 import { PlayArrow } from "@material-ui/icons";
 import Dijkstra from "../../../Algorithms/Pathfinding/Dijkstra";
 
 interface IProps {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
   screenSize: { height: number; width: number };
 }
 
@@ -23,7 +26,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Pathfinder: React.FC<IProps> = ({ screenSize }) => {
+const Pathfinder: React.FC<IProps> = ({
+  screenSize,
+  isDarkMode,
+  toggleDarkMode,
+}) => {
   const classes = useStyles();
 
   const [startNode, setStartNode] = React.useState<coordinates>({
@@ -36,31 +43,55 @@ const Pathfinder: React.FC<IProps> = ({ screenSize }) => {
     y: Math.round(screenSize.height / 22 / 2.5),
   });
 
-  const [analyzedNodes, setAnalyzedNodes] = React.useState<coordinates[]>([]);
+  const refreshNodes = () => {
+    setStartNode({
+      x: Math.round(screenSize.width / 22 / 3),
+      y: Math.round(screenSize.height / 22 / 2.5),
+    });
+    setEndNode({
+      x: Math.round(screenSize.width / 22 / 1.5),
+      y: Math.round(screenSize.height / 22 / 2.5),
+    });
+  };
 
-  const [shortestPath, setShortestPath] = React.useState<coordinates[]>([]);
+  const refreshAnalysis = () => {};
+
+  const refresh = () => {
+    refreshNodes();
+    refreshAnalysis();
+  };
 
   const runAlgorithm = () => {
-    Dijkstra({ startNode, endNode, setAnalyzedNodes, setShortestPath });
+    refreshAnalysis();
+    Dijkstra({
+      screenSize,
+      startNode,
+      endNode,
+    });
   };
 
   return (
-    <div>
-      <Grid
-        screenSize={screenSize}
-        startNode={startNode}
-        endNode={endNode}
-        setStartNode={setStartNode}
-        setEndNode={setEndNode}
-        analyzedNodes={analyzedNodes}
-        shortestPath={shortestPath}
+    <>
+      <ToolBar
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
+        refresh={refresh}
       />
-      <div className={classes.runAlgorithm}>
-        <Fab onClick={runAlgorithm} color="primary">
-          <PlayArrow />
-        </Fab>
+      <div>
+        <Grid
+          screenSize={screenSize}
+          startNode={startNode}
+          endNode={endNode}
+          setStartNode={setStartNode}
+          setEndNode={setEndNode}
+        />
+        <div className={classes.runAlgorithm}>
+          <Fab onClick={runAlgorithm} color="primary">
+            <PlayArrow />
+          </Fab>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

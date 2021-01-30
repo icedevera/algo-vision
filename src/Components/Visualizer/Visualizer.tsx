@@ -35,13 +35,14 @@ const Visualizer: React.FC<IProps> = ({ toggleDarkMode, isDarkMode }) => {
   });
 
   //handle controls in ToolBar
-  
 
   return (
     <div className="visualizer-root">
-      <ToolBar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-
-      <Pathfinder screenSize={screenSize} />
+      <Pathfinder
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
+        screenSize={screenSize}
+      />
     </div>
   );
 };

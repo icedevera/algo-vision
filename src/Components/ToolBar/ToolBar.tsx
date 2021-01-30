@@ -9,10 +9,13 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { Switch } from "@material-ui/core";
+import { Refresh } from "@material-ui/icons";
+import Button from "@material-ui/core/Button";
 
 interface IProps {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
+  refresh: () => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -33,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const ToolBar: React.FC<IProps> = ({ isDarkMode, toggleDarkMode }) => {
+const ToolBar: React.FC<IProps> = ({ isDarkMode, toggleDarkMode, refresh }) => {
   const theme = useTheme();
   const classes = useStyles(theme);
 
@@ -45,6 +48,13 @@ const ToolBar: React.FC<IProps> = ({ isDarkMode, toggleDarkMode }) => {
             <Typography variant="h6" className={classes.title}>
               Algorithm Visualizer
             </Typography>
+
+            <button onClick={refresh} className="refresh-algorithm">
+              <Refresh
+                fontSize="large"
+                style={{ color: isDarkMode ? "#f50057" : "white" }}
+              />
+            </button>
 
             <div className="dark-mode-switch">
               <Typography className={classes.text}>Dark Mode</Typography>

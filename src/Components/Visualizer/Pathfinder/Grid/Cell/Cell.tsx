@@ -9,11 +9,8 @@ type coordinates = {
 };
 
 interface IProps {
+  id: string;
   coordinates: coordinates;
-  screenSize: {
-    width: number;
-    height: number;
-  };
   startNode: coordinates;
   setStartNode: React.Dispatch<any>;
   endNode: coordinates;
@@ -22,14 +19,12 @@ interface IProps {
   setIsStartNodeDragging: React.Dispatch<any>;
   isEndNodeDragging: boolean;
   setIsEndNodeDragging: React.Dispatch<any>;
-  analyzedNodes: coordinates[];
-  shortestPath: coordinates[];
 }
 
 const Cell: React.FC<IProps> = React.memo(
   ({
+    id,
     coordinates,
-    screenSize,
     startNode,
     setStartNode,
     endNode,
@@ -38,18 +33,34 @@ const Cell: React.FC<IProps> = React.memo(
     setIsStartNodeDragging,
     isEndNodeDragging,
     setIsEndNodeDragging,
-    analyzedNodes,
-    shortestPath,
   }) => {
     const theme = useTheme();
+
     const [hoverGreen, setHoverGreen] = React.useState<boolean>(false);
     const [hoverRed, setHoverRed] = React.useState<boolean>(false);
+    // const [isStartNode, setIsStartNode] = React.useState<boolean>(false);
+    // const [isEndNode, setIsEndNode] = React.useState<boolean>(false);
 
-    const isStartNode =
+    // React.useEffect(() => {
+    //   if (coordinates.x === startNode.x && coordinates.y === startNode.y) {
+    //     setIsStartNode(true);
+    //   } else {
+    //     setIsStartNode(false);
+    //   }
+    // }, [coordinates, startNode]);
+
+    // React.useEffect(() => {
+    //   if (coordinates.x === endNode.x && coordinates.y === endNode.y) {
+    //     setIsEndNode(true);
+    //   } else {
+    //     setIsEndNode(false);
+    //   }
+    // }, [coordinates, endNode]);
+
+    var isStartNode =
       coordinates.x === startNode.x && coordinates.y === startNode.y;
 
-    const isEndNode =
-      coordinates.x === endNode.x && coordinates.y === endNode.y;
+    var isEndNode = coordinates.x === endNode.x && coordinates.y === endNode.y;
 
     const handleMouseDown = () => {
       if (isStartNode && !isStartNodeDragging) {
@@ -95,58 +106,26 @@ const Cell: React.FC<IProps> = React.memo(
       return;
     };
 
-    //change to blue if analyzed
-    const [isAnalyzed, setIsAnalyzed] = React.useState<boolean>(false);
-    React.useEffect(() => {
-      for (let i = 0; i < analyzedNodes.length; i++) {
-        if (
-          analyzedNodes[i].x === coordinates.x &&
-          analyzedNodes[i].y === coordinates.y
-        ) {
-          setIsAnalyzed(true);
-        }
-        break;
-      }
-    }, [analyzedNodes]);
-
-    //change to yellow if shortest path
-    const [isShortestPath, setIsShortestPath] = React.useState<boolean>(false);
-
-    React.useEffect(() => {
-      for (let i = 0; i < shortestPath.length; i++) {
-        if (
-          shortestPath[i].x === coordinates.x &&
-          shortestPath[i].y === coordinates.y
-        ) {
-          setIsShortestPath(true);
-        }
-        break;
-      }
-    }, [shortestPath]);
-
     return (
       <div
+        id={id}
         style={{
           border:
             theme.palette.type === "dark"
               ? `1px solid ${theme.palette.grey[800]}`
               : `1px solid ${theme.palette.grey[300]}`,
-          backgroundColor:
-            isStartNode || hoverGreen
-              ? "green"
-              : isEndNode || hoverRed
-              ? "red"
-              : isAnalyzed
-              ? "blue"
-              : isShortestPath
-              ? "yellow"
-              : theme.palette.background.default,
           cursor:
             isStartNode || isEndNode || isStartNodeDragging || isEndNodeDragging
               ? "move"
               : "default",
         }}
-        className="cell-node"
+        className={`cell-node ${
+          isStartNode || hoverGreen
+            ? "green"
+            : isEndNode || hoverRed
+            ? "red"
+            : `${theme.palette.type}-node`
+        }`}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseEnter={handleMouseEnter}
