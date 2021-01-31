@@ -14,6 +14,9 @@ import Slider from "@material-ui/core/Slider";
 import Switch from "@material-ui/core/Switch";
 import { Brightness4, Brightness7 } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
 
 interface IProps {
   isDarkMode: boolean;
@@ -23,6 +26,9 @@ interface IProps {
   toggleAddingBarriers: () => void;
   addingBarriers: boolean;
   onGridSizeCommitted: (event: object, value: number) => void;
+  gridSize: number;
+  setAnimationSpeed: React.Dispatch<any>;
+  animationSpeed: number;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -59,6 +65,22 @@ const useStyles = makeStyles((theme: Theme) =>
       color:
         theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
     },
+    setSpeed: {
+      minWidth: 150,
+      color: "white",
+      "&:before": {
+        borderColor:
+          theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+      },
+      "&:after": {
+        borderColor:
+          theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+      },
+    },
+    setSpeedIcon: {
+      fill:
+        theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+    },
   })
 );
 
@@ -71,6 +93,9 @@ const ToolBar: React.FC<IProps> = React.memo(
     toggleAddingBarriers,
     addingBarriers,
     onGridSizeCommitted,
+    gridSize,
+    animationSpeed,
+    setAnimationSpeed,
   }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
@@ -100,8 +125,13 @@ const ToolBar: React.FC<IProps> = React.memo(
       thumb: {
         backgroundColor: "#fff",
       },
-      active: {},
     })(Slider);
+
+    const handleSpeedChange = (
+      event: React.ChangeEvent<{ value: unknown }>
+    ) => {
+      setAnimationSpeed(event.target.value as number);
+    };
 
     return (
       <div className={classes.root}>
@@ -117,8 +147,9 @@ const ToolBar: React.FC<IProps> = React.memo(
                   Grid Size
                 </Typography>
                 <ToolSlider
+                  key={`slider-gridSize`}
                   className={classes.slider}
-                  defaultValue={40}
+                  defaultValue={gridSize}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
                   step={10}
@@ -129,6 +160,32 @@ const ToolBar: React.FC<IProps> = React.memo(
                   onChangeCommitted={onGridSizeCommitted}
                   style={{ width: "100px" }}
                 />
+              </div>
+
+              <div className="toolbar-speed">
+                <InputLabel style={{ color: "#fff" }} id="set-speed">
+                  Animation Speed
+                </InputLabel>
+                <Select
+                  className={classes.setSpeed}
+                  labelId="set-speed"
+                  id="demo-simple-select"
+                  value={animationSpeed}
+                  onChange={handleSpeedChange}
+                  inputProps={{
+                    classes: {
+                      icon: classes.setSpeedIcon,
+                    },
+                  }}
+                >
+                  <MenuItem value={50}>Snail</MenuItem>
+                  <MenuItem value={40}>Slower</MenuItem>
+                  <MenuItem value={30}>Slow</MenuItem>
+                  <MenuItem value={20}>Normal</MenuItem>
+                  <MenuItem value={10}>Fast</MenuItem>
+                  <MenuItem value={5}>Faster</MenuItem>
+                  <MenuItem value={1}>Lightning</MenuItem>
+                </Select>
               </div>
 
               <div className="toolbar-toggle-barriers">

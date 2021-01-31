@@ -12,6 +12,13 @@
   align-items: center;
 }
 
+.toolbar-speed {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
 .toolbar-toggle-barriers {
   display: flex;
   flex-flow: column nowrap;

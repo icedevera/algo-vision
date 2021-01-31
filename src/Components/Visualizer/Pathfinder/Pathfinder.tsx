@@ -40,6 +40,8 @@ const Pathfinder: React.FC<IProps> = React.memo(
 
     const [gridSize, setGridSize] = React.useState<number>(40);
 
+    const [animationSpeed, setAnimationSpeed] = React.useState<number>(20)
+
     const [startNode, setStartNode] = React.useState<coordinates>({
       x: Math.round(screenSize.width / (gridSize + 2) / 3),
       y: Math.round(screenSize.height / (gridSize + 2) / 2.5),
@@ -52,10 +54,6 @@ const Pathfinder: React.FC<IProps> = React.memo(
 
     const [addingBarriers, setAddingBarriers] = React.useState<boolean>(false);
     const [barriers, setBarriers] = React.useState<string[]>([]);
-
-    React.useEffect(() => {
-      console.log(barriers);
-    }, [barriers]);
 
     const toggleAddingBarriers = () => [setAddingBarriers(!addingBarriers)];
 
@@ -105,7 +103,7 @@ const Pathfinder: React.FC<IProps> = React.memo(
       }
 
       if (
-        endNode.x !== Math.round(screenSize.width / (gridSize + 2)/ 1.5) &&
+        endNode.x !== Math.round(screenSize.width / (gridSize + 2) / 1.5) &&
         endNode.y !== Math.round(screenSize.height / (gridSize + 2) / 2.5)
       ) {
         //@ts-ignore
@@ -136,13 +134,22 @@ const Pathfinder: React.FC<IProps> = React.memo(
         startNode,
         endNode,
         barriers,
-        gridSize
+        gridSize,
+        animationSpeed
       });
     };
 
     const onGridSizeCommitted = (event: object, value: number) => {
+      clearGrid()
       setGridSize(value);
-      resetGrid()
+      setStartNode({
+        x: Math.round(screenSize.width / (value + 2) / 3),
+        y: Math.round(screenSize.height / (value + 2) / 2.5),
+      });
+      setEndNode({
+        x: Math.round(screenSize.width / (value + 2) / 1.5),
+        y: Math.round(screenSize.height / (value + 2) / 2.5),
+      });
     };
 
     return (
@@ -155,6 +162,9 @@ const Pathfinder: React.FC<IProps> = React.memo(
           toggleAddingBarriers={toggleAddingBarriers}
           addingBarriers={addingBarriers}
           onGridSizeCommitted={onGridSizeCommitted}
+          gridSize={gridSize}
+          animationSpeed={animationSpeed}
+          setAnimationSpeed={setAnimationSpeed}
         />
         <div>
           <Grid

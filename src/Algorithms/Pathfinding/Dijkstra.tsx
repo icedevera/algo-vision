@@ -9,6 +9,7 @@ interface IProps {
   screenSize: { width: number; height: number };
   barriers: string[];
   gridSize: number;
+  animationSpeed: number;
 }
 
 const Dijkstra = ({
@@ -17,6 +18,7 @@ const Dijkstra = ({
   screenSize,
   barriers,
   gridSize,
+  animationSpeed,
 }: IProps) => {
   type Distances = {
     [node: string]: number;
@@ -202,7 +204,7 @@ const Dijkstra = ({
       if (i === analyze.length) {
         setTimeout(() => {
           animateShortestPath(optimalPath);
-        }, 10 * i);
+        }, animationSpeed * i);
         return;
       }
       setTimeout(() => {
@@ -215,7 +217,7 @@ const Dijkstra = ({
           //@ts-ignore
           document.getElementById(node).className = "cell-node analyzing";
         }
-      }, 10 * i);
+      }, animationSpeed * i);
     }
   }
 
@@ -231,7 +233,7 @@ const Dijkstra = ({
           //@ts-ignore
           document.getElementById(node).className = "cell-node shortest-path";
         }
-      }, 50 * i);
+      }, 20 * i);
     }
   }
 
