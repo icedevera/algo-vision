@@ -8,9 +8,16 @@ interface IProps {
   endNode: coordinates;
   screenSize: { width: number; height: number };
   barriers: string[];
+  gridSize: number;
 }
 
-const Dijkstra = ({ startNode, endNode, screenSize, barriers }: IProps) => {
+const Dijkstra = ({
+  startNode,
+  endNode,
+  screenSize,
+  barriers,
+  gridSize,
+}: IProps) => {
   type Distances = {
     [node: string]: number;
   };
@@ -38,26 +45,47 @@ const Dijkstra = ({ startNode, endNode, screenSize, barriers }: IProps) => {
     return shortestDistanceNode;
   };
 
-  //track shortest distance to reach end node
-  const distances: Distances = Object.assign(
-    { [`${endNode.x}-${endNode.y}`]: Infinity },
-    {
-      //top
-      [`${startNode.x}-${startNode.y - 1}`]: 1,
-      //right
-      [`${startNode.x + 1}-${startNode.y}`]: 1,
-      //bottom
-      [`${startNode.x}-${startNode.y + 1}`]: 1,
-      //left
-      [`${startNode.x - 1}-${startNode.y}`]: 1,
-    }
-  );
+  //set initial state of distances that track shortest distance to reach end node
+  //accounting for barriers
+  //top
+  const topDistance = !barriers.includes(`${startNode.x}-${startNode.y - 1}`)
+    ? { [`${startNode.x}-${startNode.y - 1}`]: 1 }
+    : null;
+  //right
+  const rightDistance = !barriers.includes(`${startNode.x + 1}-${startNode.y}`)
+    ? { [`${startNode.x + 1}-${startNode.y}`]: 1 }
+    : null;
+  //bottom
+  const bottomDistance = !barriers.includes(`${startNode.x}-${startNode.y + 1}`)
+    ? { [`${startNode.x}-${startNode.y + 1}`]: 1 }
+    : null;
+  //left
+  const leftDistance = !barriers.includes(`${startNode.x - 1}-${startNode.y}`)
+    ? { [`${startNode.x - 1}-${startNode.y}`]: 1 }
+    : null;
+
+  const distances: Distances = {
+    [`${endNode.x}-${endNode.y}`]: Infinity,
+    ...topDistance,
+    ...rightDistance,
+    ...bottomDistance,
+    ...leftDistance,
+  };
+
+  if (
+    barriers.includes(`${startNode.x}-${startNode.y - 1}`) &&
+    barriers.includes(`${startNode.x + 1}-${startNode.y}`) &&
+    barriers.includes(`${startNode.x}-${startNode.y + 1}`) &&
+    barriers.includes(`${startNode.x - 1}-${startNode.y}`)
+  ) {
+    return;
+  }
 
   type Parents = {
     [node: string]: string | null;
   };
 
-  //track paths taking into account the borders of the table
+  //track paths taking into account the borders of the table and barriers
   var parents: Parents = { [`${endNode.x}-${endNode.y}`]: null };
   if (
     startNode.y - 1 >= 0 &&
@@ -67,13 +95,13 @@ const Dijkstra = ({ startNode, endNode, screenSize, barriers }: IProps) => {
   } else {
   }
   if (
-    startNode.x + 1 < Math.floor(screenSize.width / 22) &&
+    startNode.x + 1 < Math.floor(screenSize.width / (gridSize + 2)) &&
     !barriers.includes(`${startNode.x + 1}-${startNode.y}`)
   ) {
     parents[`${startNode.x + 1}-${startNode.y}`] = "start";
   }
   if (
-    startNode.y + 1 < Math.floor((screenSize.height - 64) / 22) &&
+    startNode.y + 1 < Math.floor((screenSize.height - 64) / (gridSize + 2)) &&
     !barriers.includes(`${startNode.x}-${startNode.y + 1}`)
   ) {
     parents[`${startNode.x}-${startNode.y + 1}`] = "start";
@@ -87,7 +115,7 @@ const Dijkstra = ({ startNode, endNode, screenSize, barriers }: IProps) => {
 
   const analyzed: string[] = [];
 
-  //Set the initial value od the node being processed
+  //Set the initial value of the node being processed
   //We set it via the findShortestDistance function.
   //From there, we do a while loop which will keep iterating for the shortest node
 
@@ -113,20 +141,20 @@ const Dijkstra = ({ startNode, endNode, screenSize, barriers }: IProps) => {
     }
     //right
     if (
-      x + 1 < Math.floor(screenSize.width / 22) &&
+      x + 1 < Math.floor(screenSize.width / (gridSize + 2)) &&
       !barriers.includes(`${x + 1}-${y}`)
     ) {
       children[`${x + 1}-${y}`] = 1;
     }
     //bottom
     if (
-      y + 1 < Math.floor((screenSize.height - 64) / 22) &&
+      y + 1 < Math.floor((screenSize.height - 64) / (gridSize + 2)) &&
       !barriers.includes(`${x}-${y + 1}`)
     ) {
       children[`${x}-${y + 1}`] = 1;
     }
     //left
-    if (x - 1 > 0 && !barriers.includes(`${x - 1}-${y}`)) {
+    if (x - 1 >= 0 && !barriers.includes(`${x - 1}-${y}`)) {
       children[`${x - 1}-${y}`] = 1;
     }
 

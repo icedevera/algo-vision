@@ -5,6 +5,20 @@
   align-items: center;
 }
 
+.toolbar-slider {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.toolbar-toggle-barriers {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
 .toolbar-button {
   outline: none;
   border: none;

@@ -1,21 +1,19 @@
-import React from 'react'
+import React from "react";
 import "./toolbar.css";
 import {
   createStyles,
   makeStyles,
   Theme,
   useTheme,
+  withStyles,
 } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import {
-  Refresh,
-  Brightness4,
-  Brightness7,
-  BorderClear,
-  Stop,
-} from "@material-ui/icons";
+import Slider from "@material-ui/core/Slider";
+import Switch from "@material-ui/core/Switch";
+import { Brightness4, Brightness7 } from "@material-ui/icons";
+import Button from "@material-ui/core/Button";
 
 interface IProps {
   isDarkMode: boolean;
@@ -24,6 +22,7 @@ interface IProps {
   resetGrid: () => void;
   toggleAddingBarriers: () => void;
   addingBarriers: boolean;
+  onGridSizeCommitted: (event: object, value: number) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,8 +30,8 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       flexGrow: 1,
     },
-    title: {
-      color: theme.palette.type === "dark" ? "#fff" : "#fff",
+    span: {
+      color: "#fff",
     },
     text: {
       color: theme.palette.type === "dark" ? "rgba(0, 0, 0, 0.87)" : "#fff",
@@ -44,6 +43,15 @@ const useStyles = makeStyles((theme: Theme) =>
           : "#1976d2",
     },
     button: {
+      color:
+        theme.palette.type === "dark"
+          ? theme.palette.background.default
+          : "white",
+      backgroundColor:
+        theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+    },
+
+    slider: {
       color:
         theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
     },
@@ -62,31 +70,95 @@ const ToolBar: React.FC<IProps> = React.memo(
     cleanGrid,
     toggleAddingBarriers,
     addingBarriers,
+    onGridSizeCommitted,
   }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
+
+    const PurpleSwitch = withStyles({
+      switchBase: {
+        color:
+          theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+        "&$checked": {
+          color:
+            theme.palette.type === "dark"
+              ? "white"
+              : theme.palette.warning.main,
+        },
+        "&$checked + $track": {
+          backgroundColor: theme.palette.warning.main,
+        },
+      },
+      checked: {},
+      track: {},
+    })(Switch);
+
+    const ToolSlider = withStyles({
+      root: {
+        color: theme.palette.warning.main,
+      },
+      thumb: {
+        backgroundColor: "#fff",
+      },
+      active: {},
+    })(Slider);
 
     return (
       <div className={classes.root}>
         <AppBar position="static" className={classes.appBar} color="default">
           <Toolbar>
             <div className="app-bar">
-              <Typography variant="h6" className={classes.title}>
+              <Typography variant="h6" className={classes.span}>
                 Algorithm Visualizer
               </Typography>
-              <button onClick={toggleAddingBarriers} className="toolbar-button">
-                <Stop
-                  className={classes.button}
-                  fontSize="large"
-                  style={{ color: addingBarriers ? "yellow" : "white" }}
+
+              <div className="toolbar-slider">
+                <Typography className={classes.span} id="discrete-slider">
+                  Grid Size
+                </Typography>
+                <ToolSlider
+                  className={classes.slider}
+                  defaultValue={40}
+                  aria-labelledby="discrete-slider"
+                  valueLabelDisplay="auto"
+                  step={10}
+                  marks
+                  min={10}
+                  max={70}
+                  //@ts-ignore
+                  onChangeCommitted={onGridSizeCommitted}
+                  style={{ width: "100px" }}
                 />
-              </button>
-              <button onClick={cleanGrid} className="toolbar-button">
-                <BorderClear className={classes.button} fontSize="large" />
-              </button>
-              <button onClick={resetGrid} className="toolbar-button">
-                <Refresh className={classes.button} fontSize="large" />
-              </button>
+              </div>
+
+              <div className="toolbar-toggle-barriers">
+                <Typography className={classes.span} id="barrier-switch">
+                  Edit Barriers
+                </Typography>
+                <PurpleSwitch
+                  checked={addingBarriers}
+                  onChange={toggleAddingBarriers}
+                  name="add barriers"
+                  aria-labelledby="barrier-switch"
+                />
+              </div>
+
+              <Button
+                className={classes.button}
+                onClick={cleanGrid}
+                variant="contained"
+              >
+                Clear
+              </Button>
+
+              <Button
+                className={classes.button}
+                onClick={resetGrid}
+                variant="contained"
+              >
+                Reset
+              </Button>
+
               <button onClick={toggleDarkMode} className="light-switch">
                 {isDarkMode ? (
                   <Brightness7

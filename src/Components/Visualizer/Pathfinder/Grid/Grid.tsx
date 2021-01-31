@@ -18,6 +18,7 @@ interface IProps {
   };
   setBarriers: React.Dispatch<any>;
   addingBarriers: boolean;
+  gridSize: number;
 }
 
 const Grid: React.FC<IProps> = React.memo(
@@ -29,6 +30,7 @@ const Grid: React.FC<IProps> = React.memo(
     setEndNode,
     setBarriers,
     addingBarriers,
+    gridSize,
   }) => {
     const [
       isStartNodeDragging,
@@ -42,8 +44,10 @@ const Grid: React.FC<IProps> = React.memo(
 
     const generateGrid = () => {
       const grid = [];
-      const columnCellCount = Math.floor(screenSize.width / 22);
-      const rowCellCount = Math.floor((screenSize.height - 64) / 22);
+      const columnCellCount = Math.floor(screenSize.width / (gridSize + 2));
+      const rowCellCount = Math.floor(
+        (screenSize.height - 64) / (gridSize + 2)
+      );
 
       const generateColumn = (i: number) => {
         const column = [];
@@ -53,6 +57,7 @@ const Grid: React.FC<IProps> = React.memo(
             <td key={`cell-node-${j}-${i}`} style={{ padding: 0 }}>
               <Cell
                 id={`${j}-${i}`}
+                gridSize={gridSize}
                 isStartNodeDragging={isStartNodeDragging}
                 setIsStartNodeDragging={setIsStartNodeDragging}
                 isEndNodeDragging={isEndNodeDragging}

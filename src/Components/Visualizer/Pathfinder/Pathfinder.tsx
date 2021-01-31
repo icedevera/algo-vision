@@ -38,14 +38,16 @@ const Pathfinder: React.FC<IProps> = React.memo(
     const theme = useTheme();
     const classes = useStyles();
 
+    const [gridSize, setGridSize] = React.useState<number>(40);
+
     const [startNode, setStartNode] = React.useState<coordinates>({
-      x: Math.round(screenSize.width / 22 / 3),
-      y: Math.round(screenSize.height / 22 / 2.5),
+      x: Math.round(screenSize.width / (gridSize + 2) / 3),
+      y: Math.round(screenSize.height / (gridSize + 2) / 2.5),
     });
 
     const [endNode, setEndNode] = React.useState<coordinates>({
-      x: Math.round(screenSize.width / 22 / 1.5),
-      y: Math.round(screenSize.height / 22 / 2.5),
+      x: Math.round(screenSize.width / (gridSize + 2) / 1.5),
+      y: Math.round(screenSize.height / (gridSize + 2) / 2.5),
     });
 
     const [addingBarriers, setAddingBarriers] = React.useState<boolean>(false);
@@ -93,8 +95,8 @@ const Pathfinder: React.FC<IProps> = React.memo(
     const resetGrid = () => {
       clearGrid();
       if (
-        startNode.x !== Math.round(screenSize.width / 22 / 3) &&
-        startNode.y !== Math.round(screenSize.height / 22 / 2.5)
+        startNode.x !== Math.round(screenSize.width / (gridSize + 2) / 3) &&
+        startNode.y !== Math.round(screenSize.height / (gridSize + 2) / 2.5)
       ) {
         //@ts-ignore
         document.getElementById(
@@ -103,8 +105,8 @@ const Pathfinder: React.FC<IProps> = React.memo(
       }
 
       if (
-        endNode.x !== Math.round(screenSize.width / 22 / 1.5) &&
-        endNode.y !== Math.round(screenSize.height / 22 / 2.5)
+        endNode.x !== Math.round(screenSize.width / (gridSize + 2)/ 1.5) &&
+        endNode.y !== Math.round(screenSize.height / (gridSize + 2) / 2.5)
       ) {
         //@ts-ignore
         document.getElementById(
@@ -113,12 +115,12 @@ const Pathfinder: React.FC<IProps> = React.memo(
       }
 
       setStartNode({
-        x: Math.round(screenSize.width / 22 / 3),
-        y: Math.round(screenSize.height / 22 / 2.5),
+        x: Math.round(screenSize.width / (gridSize + 2) / 3),
+        y: Math.round(screenSize.height / (gridSize + 2) / 2.5),
       });
       setEndNode({
-        x: Math.round(screenSize.width / 22 / 1.5),
-        y: Math.round(screenSize.height / 22 / 2.5),
+        x: Math.round(screenSize.width / (gridSize + 2) / 1.5),
+        y: Math.round(screenSize.height / (gridSize + 2) / 2.5),
       });
     };
 
@@ -134,7 +136,13 @@ const Pathfinder: React.FC<IProps> = React.memo(
         startNode,
         endNode,
         barriers,
+        gridSize
       });
+    };
+
+    const onGridSizeCommitted = (event: object, value: number) => {
+      setGridSize(value);
+      resetGrid()
     };
 
     return (
@@ -146,9 +154,11 @@ const Pathfinder: React.FC<IProps> = React.memo(
           cleanGrid={cleanGrid}
           toggleAddingBarriers={toggleAddingBarriers}
           addingBarriers={addingBarriers}
+          onGridSizeCommitted={onGridSizeCommitted}
         />
         <div>
           <Grid
+            gridSize={gridSize}
             screenSize={screenSize}
             startNode={startNode}
             endNode={endNode}

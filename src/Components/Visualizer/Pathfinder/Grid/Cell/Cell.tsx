@@ -23,10 +23,12 @@ interface IProps {
   addingBarriers: boolean;
   mouseDown: boolean;
   setMouseDown: React.Dispatch<any>;
+  gridSize: number;
 }
 
 const Cell: React.FC<IProps> = React.memo(
   ({
+    gridSize,
     id,
     coordinates,
     startNode,
@@ -40,14 +42,12 @@ const Cell: React.FC<IProps> = React.memo(
     setBarriers,
     addingBarriers,
     mouseDown,
-    setMouseDown
+    setMouseDown,
   }) => {
     const theme = useTheme();
 
     const [hoverGreen, setHoverGreen] = React.useState<boolean>(false);
     const [hoverRed, setHoverRed] = React.useState<boolean>(false);
-    const [isBarrier, setIsBarrier] = React.useState<boolean>(false);
-
 
     var isStartNode =
       coordinates.x === startNode.x && coordinates.y === startNode.y;
@@ -65,11 +65,16 @@ const Cell: React.FC<IProps> = React.memo(
 
       if (addingBarriers && !isStartNode && !isEndNode) {
         setMouseDown(true);
-        setIsBarrier(true);
         setBarriers((prev: string[]) => [
           ...prev,
           `${coordinates.x}-${coordinates.y}`,
         ]);
+        if (document.getElementById(`${coordinates.x}-${coordinates.y}`)) {
+          //@ts-ignore
+          document.getElementById(
+            `${coordinates.x}-${coordinates.y}`
+          ).className = "cell-node barrier-node";
+        }
       }
 
       return;
@@ -83,11 +88,16 @@ const Cell: React.FC<IProps> = React.memo(
         setHoverRed(true);
       }
       if (addingBarriers && mouseDown && !isStartNode && !isEndNode) {
-        setIsBarrier(true);
         setBarriers((prev: string[]) => [
           ...prev,
           `${coordinates.x}-${coordinates.y}`,
         ]);
+        if (document.getElementById(`${coordinates.x}-${coordinates.y}`)) {
+          //@ts-ignore
+          document.getElementById(
+            `${coordinates.x}-${coordinates.y}`
+          ).className = "cell-node barrier-node";
+        }
       }
       return;
     };
@@ -130,14 +140,14 @@ const Cell: React.FC<IProps> = React.memo(
             isStartNode || isEndNode || isStartNodeDragging || isEndNodeDragging
               ? "move"
               : "default",
+            width: `${gridSize}px`,
+            height: `${gridSize}px`
         }}
         className={`cell-node ${
           isStartNode || hoverGreen
             ? "green"
             : isEndNode || hoverRed
             ? "red"
-            : isBarrier
-            ? "barrier-node"
             : `${theme.palette.type}-node`
         }`}
         onMouseDown={handleMouseDown}

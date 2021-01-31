@@ -1,6 +1,4 @@
 .cell-node {
-  width: 20px;
-  height: 20px;
   transition: transform 0.1s ease-out;
 }
 
