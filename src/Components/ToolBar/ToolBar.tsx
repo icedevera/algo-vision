@@ -11,7 +11,6 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Slider from "@material-ui/core/Slider";
-import Switch from "@material-ui/core/Switch";
 import { Brightness4, Brightness7 } from "@material-ui/icons";
 import Button from "@material-ui/core/Button";
 import Select from "@material-ui/core/Select";
@@ -23,12 +22,11 @@ interface IProps {
   toggleDarkMode: () => void;
   cleanGrid: () => void;
   resetGrid: () => void;
-  toggleAddingBarriers: () => void;
-  addingBarriers: boolean;
   onGridSizeCommitted: (event: object, value: number) => void;
   gridSize: number;
   setAnimationSpeed: React.Dispatch<any>;
   animationSpeed: number;
+  clearAnalysis: () => void
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -90,8 +88,7 @@ const ToolBar: React.FC<IProps> = React.memo(
     toggleDarkMode,
     resetGrid,
     cleanGrid,
-    toggleAddingBarriers,
-    addingBarriers,
+    clearAnalysis,
     onGridSizeCommitted,
     gridSize,
     animationSpeed,
@@ -99,24 +96,6 @@ const ToolBar: React.FC<IProps> = React.memo(
   }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
-
-    const PurpleSwitch = withStyles({
-      switchBase: {
-        color:
-          theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
-        "&$checked": {
-          color:
-            theme.palette.type === "dark"
-              ? "white"
-              : theme.palette.warning.main,
-        },
-        "&$checked + $track": {
-          backgroundColor: theme.palette.warning.main,
-        },
-      },
-      checked: {},
-      track: {},
-    })(Switch);
 
     const ToolSlider = withStyles({
       root: {
@@ -188,24 +167,20 @@ const ToolBar: React.FC<IProps> = React.memo(
                 </Select>
               </div>
 
-              <div className="toolbar-toggle-barriers">
-                <Typography className={classes.span} id="barrier-switch">
-                  Edit Barriers
-                </Typography>
-                <PurpleSwitch
-                  checked={addingBarriers}
-                  onChange={toggleAddingBarriers}
-                  name="add barriers"
-                  aria-labelledby="barrier-switch"
-                />
-              </div>
+              <Button
+                className={classes.button}
+                onClick={clearAnalysis}
+                variant="contained"
+              >
+                Clear Analysis
+              </Button>
 
               <Button
                 className={classes.button}
                 onClick={cleanGrid}
                 variant="contained"
               >
-                Clear
+                Clear All
               </Button>
 
               <Button

@@ -17,8 +17,9 @@ interface IProps {
     height: number;
   };
   setBarriers: React.Dispatch<any>;
-  addingBarriers: boolean;
   gridSize: number;
+  quickAnalyze: boolean;
+  isAnalyzing: boolean;
 }
 
 const Grid: React.FC<IProps> = React.memo(
@@ -29,8 +30,9 @@ const Grid: React.FC<IProps> = React.memo(
     setStartNode,
     setEndNode,
     setBarriers,
-    addingBarriers,
     gridSize,
+    quickAnalyze,
+    isAnalyzing
   }) => {
     const [
       isStartNodeDragging,
@@ -68,9 +70,10 @@ const Grid: React.FC<IProps> = React.memo(
                 setEndNode={setEndNode}
                 coordinates={{ x: j, y: i }}
                 setBarriers={setBarriers}
-                addingBarriers={addingBarriers}
                 mouseDown={mouseDown}
                 setMouseDown={setMouseDown}
+                quickAnalyze={quickAnalyze}
+                isAnalyzing={isAnalyzing}
               />
             </td>
           );

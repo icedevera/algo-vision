@@ -7,6 +7,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { PlayArrow } from "@material-ui/icons";
 import Dijkstra from "../../../Algorithms/Pathfinding/Dijkstra";
 import { useTheme } from "@material-ui/core/styles";
+import {
+  animateAlgorithm,
+  showAlgorithm,
+  showShortestPath,
+} from "../../../Animation/Animate";
 
 interface IProps {
   isDarkMode: boolean;
@@ -40,7 +45,11 @@ const Pathfinder: React.FC<IProps> = React.memo(
 
     const [gridSize, setGridSize] = React.useState<number>(40);
 
-    const [animationSpeed, setAnimationSpeed] = React.useState<number>(20)
+    const [animationSpeed, setAnimationSpeed] = React.useState<number>(20);
+
+    const [quickAnalyze, setQuickAnalyze] = React.useState<boolean>(false);
+
+    const [isAnalyzing, setIsAnalyzing] = React.useState<boolean>(false);
 
     const [startNode, setStartNode] = React.useState<coordinates>({
       x: Math.round(screenSize.width / (gridSize + 2) / 3),
@@ -52,12 +61,10 @@ const Pathfinder: React.FC<IProps> = React.memo(
       y: Math.round(screenSize.height / (gridSize + 2) / 2.5),
     });
 
-    const [addingBarriers, setAddingBarriers] = React.useState<boolean>(false);
     const [barriers, setBarriers] = React.useState<string[]>([]);
 
-    const toggleAddingBarriers = () => [setAddingBarriers(!addingBarriers)];
-
-    const clearGrid = () => {
+    const clearAnalysis = () => {
+      setQuickAnalyze(false);
       let analyzing = document.getElementsByClassName("analyzing");
       let shortestPath = document.getElementsByClassName("shortest-path");
 
@@ -91,9 +98,10 @@ const Pathfinder: React.FC<IProps> = React.memo(
     };
 
     const resetGrid = () => {
-      clearGrid();
+      clearAnalysis();
+      clearBarriers();
       if (
-        startNode.x !== Math.round(screenSize.width / (gridSize + 2) / 3) &&
+        startNode.x !== Math.round(screenSize.width / (gridSize + 2) / 3) ||
         startNode.y !== Math.round(screenSize.height / (gridSize + 2) / 2.5)
       ) {
         //@ts-ignore
@@ -103,7 +111,7 @@ const Pathfinder: React.FC<IProps> = React.memo(
       }
 
       if (
-        endNode.x !== Math.round(screenSize.width / (gridSize + 2) / 1.5) &&
+        endNode.x !== Math.round(screenSize.width / (gridSize + 2) / 1.5) ||
         endNode.y !== Math.round(screenSize.height / (gridSize + 2) / 2.5)
       ) {
         //@ts-ignore
@@ -122,25 +130,65 @@ const Pathfinder: React.FC<IProps> = React.memo(
       });
     };
 
+    React.useEffect(() => {
+      console.log(isAnalyzing);
+    }, [isAnalyzing]);
+
     const cleanGrid = () => {
-      clearGrid();
+      clearAnalysis();
       clearBarriers();
     };
 
-    const runAlgorithm = () => {
-      clearGrid();
-      Dijkstra({
+    const runAlgorithm = async () => {
+      clearAnalysis();
+      setIsAnalyzing(true);
+      const results = await Dijkstra({
         screenSize,
         startNode,
         endNode,
         barriers,
         gridSize,
-        animationSpeed
       });
+      animateAlgorithm(
+        //@ts-ignore
+        results.analyzed,
+        //@ts-ignore
+        results.optimalPath,
+        animationSpeed,
+        startNode,
+        endNode,
+        setIsAnalyzing
+      );
+
+      setQuickAnalyze(true);
     };
 
+    React.useEffect(() => {
+      if (quickAnalyze) {
+        const analyze = async () => {
+          clearAnalysis();
+          setQuickAnalyze(true);
+          const results = await Dijkstra({
+            screenSize,
+            startNode,
+            endNode,
+            barriers,
+            gridSize,
+          });
+
+          if (results) {
+            showAlgorithm(results.analyzed, startNode, endNode);
+            showShortestPath(results.optimalPath, startNode, endNode);
+          }
+        };
+
+        analyze();
+      }
+      //eslint-disable-next-line
+    }, [startNode, endNode]);
+
     const onGridSizeCommitted = (event: object, value: number) => {
-      clearGrid()
+      resetGrid();
       setGridSize(value);
       setStartNode({
         x: Math.round(screenSize.width / (value + 2) / 3),
@@ -158,9 +206,8 @@ const Pathfinder: React.FC<IProps> = React.memo(
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
           resetGrid={resetGrid}
+          clearAnalysis={clearAnalysis}
           cleanGrid={cleanGrid}
-          toggleAddingBarriers={toggleAddingBarriers}
-          addingBarriers={addingBarriers}
           onGridSizeCommitted={onGridSizeCommitted}
           gridSize={gridSize}
           animationSpeed={animationSpeed}
@@ -175,7 +222,8 @@ const Pathfinder: React.FC<IProps> = React.memo(
             setStartNode={setStartNode}
             setEndNode={setEndNode}
             setBarriers={setBarriers}
-            addingBarriers={addingBarriers}
+            quickAnalyze={quickAnalyze}
+            isAnalyzing={isAnalyzing}
           />
           <div className={classes.runAlgorithm}>
             <Fab onClick={runAlgorithm} className={classes.fab}>

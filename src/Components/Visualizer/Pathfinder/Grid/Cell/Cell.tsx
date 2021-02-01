@@ -20,10 +20,11 @@ interface IProps {
   isEndNodeDragging: boolean;
   setIsEndNodeDragging: React.Dispatch<any>;
   setBarriers: React.Dispatch<any>;
-  addingBarriers: boolean;
   mouseDown: boolean;
   setMouseDown: React.Dispatch<any>;
   gridSize: number;
+  quickAnalyze: boolean;
+  isAnalyzing: boolean;
 }
 
 const Cell: React.FC<IProps> = React.memo(
@@ -40,41 +41,79 @@ const Cell: React.FC<IProps> = React.memo(
     isEndNodeDragging,
     setIsEndNodeDragging,
     setBarriers,
-    addingBarriers,
     mouseDown,
     setMouseDown,
+    quickAnalyze,
+    isAnalyzing
   }) => {
     const theme = useTheme();
 
     const [hoverGreen, setHoverGreen] = React.useState<boolean>(false);
     const [hoverRed, setHoverRed] = React.useState<boolean>(false);
 
+    const [wasBarrier, setWasBarrier] = React.useState<boolean>(false);
+
     var isStartNode =
       coordinates.x === startNode.x && coordinates.y === startNode.y;
 
     var isEndNode = coordinates.x === endNode.x && coordinates.y === endNode.y;
 
+    const cellElement = document.getElementById(
+      `${coordinates.x}-${coordinates.y}`
+    );
+
+    const removeItemOnce = (arr: string[], value: string) => {
+      var index = arr.indexOf(value);
+      if (index > -1) {
+        arr.splice(index, 1);
+      }
+      return arr;
+    };
+
+    const removeBarrier = () => {
+      setBarriers((prev: string[]) => removeItemOnce(prev, id));
+      if (document.getElementById(id)) {
+        //@ts-ignore
+        document.getElementById(
+          id
+        ).className = `cell-node ${theme.palette.type}-node`;
+      }
+    };
+
+    const addBarrier = () => {
+      setBarriers((prev: string[]) => [...prev, id]);
+      if (document.getElementById(id)) {
+        //@ts-ignore
+        document.getElementById(id).className = "cell-node barrier-node";
+      }
+    };
+
     const handleMouseDown = () => {
-      if (isStartNode && !isStartNodeDragging) {
+      if (isStartNode && !isAnalyzing) {
         setIsStartNodeDragging(true);
       }
 
-      if (isEndNode && !isEndNodeDragging) {
+      if (isEndNode && !isAnalyzing) {
         setIsEndNodeDragging(true);
       }
 
-      if (addingBarriers && !isStartNode && !isEndNode) {
+      if (
+        !isStartNode &&
+        !isEndNode &&
+        !isStartNodeDragging &&
+        !isEndNodeDragging &&
+        !isAnalyzing
+      ) {
         setMouseDown(true);
-        setBarriers((prev: string[]) => [
-          ...prev,
-          `${coordinates.x}-${coordinates.y}`,
-        ]);
-        if (document.getElementById(`${coordinates.x}-${coordinates.y}`)) {
-          //@ts-ignore
-          document.getElementById(
-            `${coordinates.x}-${coordinates.y}`
-          ).className = "cell-node barrier-node";
+        if (cellElement && cellElement.classList.contains("barrier-node")) {
+          removeBarrier();
+        } else {
+          addBarrier();
         }
+      }
+
+      if (wasBarrier) {
+        setWasBarrier(false);
       }
 
       return;
@@ -82,21 +121,31 @@ const Cell: React.FC<IProps> = React.memo(
 
     const handleMouseEnter = () => {
       if (isStartNodeDragging) {
+        if (quickAnalyze) {
+          if (cellElement && cellElement.classList.contains("barrier-node")) {
+            setWasBarrier(true);
+          }
+          setStartNode(coordinates);
+          removeBarrier();
+        }
         setHoverGreen(true);
       }
       if (isEndNodeDragging) {
+        if (quickAnalyze) {
+          if (cellElement && cellElement.classList.contains("barrier-node")) {
+            setWasBarrier(true);
+          }
+          setEndNode(coordinates);
+          removeBarrier();
+        }
         setHoverRed(true);
       }
-      if (addingBarriers && mouseDown && !isStartNode && !isEndNode) {
-        setBarriers((prev: string[]) => [
-          ...prev,
-          `${coordinates.x}-${coordinates.y}`,
-        ]);
-        if (document.getElementById(`${coordinates.x}-${coordinates.y}`)) {
-          //@ts-ignore
-          document.getElementById(
-            `${coordinates.x}-${coordinates.y}`
-          ).className = "cell-node barrier-node";
+      if (mouseDown && !isStartNode && !isEndNode &&
+        !isAnalyzing) {
+        if (cellElement && cellElement.classList.contains("barrier-node")) {
+          removeBarrier();
+        } else {
+          addBarrier();
         }
       }
       return;
@@ -104,9 +153,15 @@ const Cell: React.FC<IProps> = React.memo(
 
     const handleMouseLeave = () => {
       if (isStartNodeDragging) {
+        if (quickAnalyze && wasBarrier) {
+          addBarrier();
+        }
         setHoverGreen(false);
       }
       if (isEndNodeDragging) {
+        if (quickAnalyze && wasBarrier) {
+          addBarrier();
+        }
         setHoverRed(false);
       }
       return;
@@ -122,7 +177,7 @@ const Cell: React.FC<IProps> = React.memo(
         setIsEndNodeDragging(false);
         setEndNode(coordinates);
       }
-      if (addingBarriers && mouseDown) {
+      if (mouseDown) {
         setMouseDown(false);
       }
       return;
@@ -140,14 +195,16 @@ const Cell: React.FC<IProps> = React.memo(
             isStartNode || isEndNode || isStartNodeDragging || isEndNodeDragging
               ? "move"
               : "default",
-            width: `${gridSize}px`,
-            height: `${gridSize}px`
+          width: `${gridSize}px`,
+          height: `${gridSize}px`,
         }}
         className={`cell-node ${
           isStartNode || hoverGreen
             ? "green"
             : isEndNode || hoverRed
             ? "red"
+            : wasBarrier
+            ? "barrier-node"
             : `${theme.palette.type}-node`
         }`}
         onMouseDown={handleMouseDown}

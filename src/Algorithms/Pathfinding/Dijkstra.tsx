@@ -9,7 +9,6 @@ interface IProps {
   screenSize: { width: number; height: number };
   barriers: string[];
   gridSize: number;
-  animationSpeed: number;
 }
 
 const Dijkstra = ({
@@ -18,7 +17,6 @@ const Dijkstra = ({
   screenSize,
   barriers,
   gridSize,
-  animationSpeed,
 }: IProps) => {
   type Distances = {
     [node: string]: number;
@@ -46,6 +44,16 @@ const Dijkstra = ({
 
     return shortestDistanceNode;
   };
+
+  //if finish node is right next to startnode, finish algo
+  if (
+    (startNode.x === endNode.x && startNode.y - 1 === endNode.y) ||
+    (startNode.x + 1 === endNode.x && startNode.y === endNode.y) ||
+    (startNode.x === endNode.x && startNode.y + 1 === endNode.y) ||
+    (startNode.x - 1 === endNode.x && startNode.y === endNode.y)
+  ) {
+    return { analyzed: [], optimalPath: [] };
+  }
 
   //set initial state of distances that track shortest distance to reach end node
   //accounting for barriers
@@ -197,49 +205,9 @@ const Dijkstra = ({
   //   path: optimalPath,
   // };
 
-  //now for the fun part
-  //handle animation & visualization of dijkstra's algorithm!
-  function animateDijkstra(analyze: string[], optimalPath: string[]) {
-    for (let i = 0; i <= analyze.length; i++) {
-      if (i === analyze.length) {
-        setTimeout(() => {
-          animateShortestPath(optimalPath);
-        }, animationSpeed * i);
-        return;
-      }
-      setTimeout(() => {
-        const node = analyze[i];
-        if (
-          document.getElementById(node) &&
-          node !== `${startNode.x}-${startNode.y}` &&
-          node !== `${endNode.x}-${endNode.y}`
-        ) {
-          //@ts-ignore
-          document.getElementById(node).className = "cell-node analyzing";
-        }
-      }, animationSpeed * i);
-    }
-  }
+  // console.log(dijkstrasResult);
 
-  function animateShortestPath(optimalPath: string[]) {
-    for (let i = 0; i < optimalPath.length; i++) {
-      setTimeout(() => {
-        const node = optimalPath[i];
-        if (
-          document.getElementById(node) &&
-          node !== `${startNode.x}-${startNode.y}` &&
-          node !== `${endNode.x}-${endNode.y}`
-        ) {
-          //@ts-ignore
-          document.getElementById(node).className = "cell-node shortest-path";
-        }
-      }, 20 * i);
-    }
-  }
-
-  animateDijkstra(analyzed, optimalPath);
-
-  return null;
+  return { analyzed, optimalPath };
 };
 
 export default Dijkstra;
