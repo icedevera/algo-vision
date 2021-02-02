@@ -23,7 +23,7 @@ interface IProps {
   mouseDown: boolean;
   setMouseDown: React.Dispatch<any>;
   gridSize: number;
-  quickAnalyze: boolean;
+
   isAnalyzing: boolean;
 }
 
@@ -43,8 +43,8 @@ const Cell: React.FC<IProps> = React.memo(
     setBarriers,
     mouseDown,
     setMouseDown,
-    quickAnalyze,
-    isAnalyzing
+
+    isAnalyzing,
   }) => {
     const theme = useTheme();
 
@@ -121,27 +121,24 @@ const Cell: React.FC<IProps> = React.memo(
 
     const handleMouseEnter = () => {
       if (isStartNodeDragging) {
-        if (quickAnalyze) {
-          if (cellElement && cellElement.classList.contains("barrier-node")) {
-            setWasBarrier(true);
-          }
-          setStartNode(coordinates);
-          removeBarrier();
+        if (cellElement && cellElement.classList.contains("barrier-node")) {
+          setWasBarrier(true);
         }
+        setStartNode(coordinates);
+        removeBarrier();
+
         setHoverGreen(true);
       }
       if (isEndNodeDragging) {
-        if (quickAnalyze) {
-          if (cellElement && cellElement.classList.contains("barrier-node")) {
-            setWasBarrier(true);
-          }
+        if (cellElement && cellElement.classList.contains("barrier-node")) {
+          setWasBarrier(true);
+
           setEndNode(coordinates);
           removeBarrier();
         }
         setHoverRed(true);
       }
-      if (mouseDown && !isStartNode && !isEndNode &&
-        !isAnalyzing) {
+      if (mouseDown && !isStartNode && !isEndNode && !isAnalyzing) {
         if (cellElement && cellElement.classList.contains("barrier-node")) {
           removeBarrier();
         } else {
@@ -153,13 +150,13 @@ const Cell: React.FC<IProps> = React.memo(
 
     const handleMouseLeave = () => {
       if (isStartNodeDragging) {
-        if (quickAnalyze && wasBarrier) {
+        if (wasBarrier) {
           addBarrier();
         }
         setHoverGreen(false);
       }
       if (isEndNodeDragging) {
-        if (quickAnalyze && wasBarrier) {
+        if (wasBarrier) {
           addBarrier();
         }
         setHoverRed(false);

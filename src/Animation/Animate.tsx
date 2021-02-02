@@ -101,3 +101,25 @@ export const showShortestPath = (
     }
   }
 };
+
+export const animateMaze = (
+  mazeBarriers: string[],
+  setBarriers: React.Dispatch<any>,
+  animationSpeed: number,
+  setIsAnalyzing: React.Dispatch<any>
+) => {
+  for (let i = 0; i < mazeBarriers.length; i++) {
+    setTimeout(() => {
+      const node = mazeBarriers[i];
+      if (document.getElementById(node)) {
+        //@ts-ignore
+        document.getElementById(node).className =
+          "cell-node barrier-node animation";
+      }
+      if (i === mazeBarriers.length - 1) {
+        setBarriers(mazeBarriers);
+        setIsAnalyzing(false);
+      }
+    }, animationSpeed * 2 * i);
+  }
+};

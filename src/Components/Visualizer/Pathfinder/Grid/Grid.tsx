@@ -18,7 +18,6 @@ interface IProps {
   };
   setBarriers: React.Dispatch<any>;
   gridSize: number;
-  quickAnalyze: boolean;
   isAnalyzing: boolean;
 }
 
@@ -31,7 +30,6 @@ const Grid: React.FC<IProps> = React.memo(
     setEndNode,
     setBarriers,
     gridSize,
-    quickAnalyze,
     isAnalyzing
   }) => {
     const [
@@ -72,7 +70,6 @@ const Grid: React.FC<IProps> = React.memo(
                 setBarriers={setBarriers}
                 mouseDown={mouseDown}
                 setMouseDown={setMouseDown}
-                quickAnalyze={quickAnalyze}
                 isAnalyzing={isAnalyzing}
               />
             </td>

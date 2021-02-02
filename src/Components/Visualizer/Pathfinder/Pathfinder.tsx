@@ -9,9 +9,11 @@ import Dijkstra from "../../../Algorithms/Pathfinding/Dijkstra";
 import { useTheme } from "@material-ui/core/styles";
 import {
   animateAlgorithm,
+  animateMaze,
   showAlgorithm,
   showShortestPath,
 } from "../../../Animation/Animate";
+import { recursiveDivisionMaze } from "../../../Maze/RecursizeDivision";
 
 interface IProps {
   isDarkMode: boolean;
@@ -63,6 +65,10 @@ const Pathfinder: React.FC<IProps> = React.memo(
 
     const [barriers, setBarriers] = React.useState<string[]>([]);
 
+    const [maze, setMaze] = React.useState<
+      "none" | "recursive" | "recursive horizontal" | "recursive vertical"
+    >("none");
+
     const clearAnalysis = () => {
       setQuickAnalyze(false);
       let analyzing = document.getElementsByClassName("analyzing");
@@ -88,6 +94,7 @@ const Pathfinder: React.FC<IProps> = React.memo(
     };
 
     const clearBarriers = () => {
+      setMaze("none");
       let barrierNodes = document.getElementsByClassName("barrier-node");
       while (barrierNodes.length)
         barrierNodes[0].className = barrierNodes[0].className.replace(
@@ -130,10 +137,6 @@ const Pathfinder: React.FC<IProps> = React.memo(
       });
     };
 
-    React.useEffect(() => {
-      console.log(isAnalyzing);
-    }, [isAnalyzing]);
-
     const cleanGrid = () => {
       clearAnalysis();
       clearBarriers();
@@ -163,29 +166,83 @@ const Pathfinder: React.FC<IProps> = React.memo(
       setQuickAnalyze(true);
     };
 
+    //drag start node to quickly see shortest path analysis
     React.useEffect(() => {
+      const analyze = async () => {
+        clearAnalysis();
+        setQuickAnalyze(true);
+        let results = await Dijkstra({
+          screenSize,
+          startNode,
+          endNode,
+          barriers,
+          gridSize,
+        });
+
+        if (results) {
+          showAlgorithm(results.analyzed, startNode, endNode);
+          showShortestPath(results.optimalPath, startNode, endNode);
+        }
+      };
+
       if (quickAnalyze) {
-        const analyze = async () => {
-          clearAnalysis();
-          setQuickAnalyze(true);
-          const results = await Dijkstra({
-            screenSize,
-            startNode,
-            endNode,
-            barriers,
-            gridSize,
-          });
-
-          if (results) {
-            showAlgorithm(results.analyzed, startNode, endNode);
-            showShortestPath(results.optimalPath, startNode, endNode);
-          }
-        };
-
         analyze();
       }
       //eslint-disable-next-line
     }, [startNode, endNode]);
+
+    //create maze via the set algorithm
+    React.useEffect(() => {
+      const createMaze = async (
+        orientation: "horizontal" | "vertical",
+        bias: "none" | "horizontal" | "vertical"
+      ) => {
+        setIsAnalyzing(true);
+        let rowEnd = Math.floor((screenSize.height - 64) / (gridSize + 2)) - 1;
+        let columnEnd = Math.floor(screenSize.width / (gridSize + 2)) - 1;
+        let mazeBarriers: string[] = [];
+        let totalGridSize = {
+          rowCount: rowEnd,
+          columnCount: columnEnd,
+        };
+        await recursiveDivisionMaze(
+          startNode,
+          endNode,
+          2,
+          rowEnd - 1,
+          2,
+          columnEnd - 1,
+          orientation,
+          false,
+          mazeBarriers,
+          totalGridSize,
+          bias
+        );
+        await animateMaze(
+          mazeBarriers,
+          setBarriers,
+          animationSpeed,
+          setIsAnalyzing
+        );
+      };
+
+      if (maze === "none") {
+        clearBarriers();
+      } else if (maze === "recursive") {
+        cleanGrid();
+        setMaze("recursive");
+        createMaze("horizontal", "none");
+      } else if (maze === "recursive horizontal") {
+        cleanGrid();
+        setMaze("recursive horizontal");
+        createMaze("horizontal", "horizontal");
+      } else if (maze === "recursive vertical") {
+        cleanGrid();
+        setMaze("recursive vertical");
+        createMaze("vertical", "vertical");
+      }
+      //eslint-disable-next-line
+    }, [maze]);
 
     const onGridSizeCommitted = (event: object, value: number) => {
       resetGrid();
@@ -200,6 +257,17 @@ const Pathfinder: React.FC<IProps> = React.memo(
       });
     };
 
+    const handleSpeedChange = (
+      event: React.ChangeEvent<{ value: unknown }>
+    ) => {
+      setAnimationSpeed(event.target.value as number);
+    };
+
+    const handleMazeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+      //@ts-ignore
+      setMaze(event.target.value as string);
+    };
+
     return (
       <>
         <ToolBar
@@ -212,6 +280,11 @@ const Pathfinder: React.FC<IProps> = React.memo(
           gridSize={gridSize}
           animationSpeed={animationSpeed}
           setAnimationSpeed={setAnimationSpeed}
+          setMaze={setMaze}
+          maze={maze}
+          handleSpeedChange={handleSpeedChange}
+          handleMazeChange={handleMazeChange}
+          isAnalyzing={isAnalyzing}
         />
         <div>
           <Grid
@@ -222,11 +295,14 @@ const Pathfinder: React.FC<IProps> = React.memo(
             setStartNode={setStartNode}
             setEndNode={setEndNode}
             setBarriers={setBarriers}
-            quickAnalyze={quickAnalyze}
             isAnalyzing={isAnalyzing}
           />
           <div className={classes.runAlgorithm}>
-            <Fab onClick={runAlgorithm} className={classes.fab}>
+            <Fab
+              onClick={runAlgorithm}
+              className={classes.fab}
+              disabled={isAnalyzing}
+            >
               <PlayArrow className={classes.play} />
             </Fab>
           </div>

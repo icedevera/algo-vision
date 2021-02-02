@@ -26,7 +26,12 @@ interface IProps {
   gridSize: number;
   setAnimationSpeed: React.Dispatch<any>;
   animationSpeed: number;
-  clearAnalysis: () => void
+  clearAnalysis: () => void;
+  setMaze: React.Dispatch<any>;
+  maze: "none" | "recursive" | "recursive horizontal" | "recursive vertical";
+  handleSpeedChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  handleMazeChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  isAnalyzing: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -92,7 +97,10 @@ const ToolBar: React.FC<IProps> = React.memo(
     onGridSizeCommitted,
     gridSize,
     animationSpeed,
-    setAnimationSpeed,
+    maze,
+    handleSpeedChange,
+    handleMazeChange,
+    isAnalyzing,
   }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
@@ -106,12 +114,6 @@ const ToolBar: React.FC<IProps> = React.memo(
       },
     })(Slider);
 
-    const handleSpeedChange = (
-      event: React.ChangeEvent<{ value: unknown }>
-    ) => {
-      setAnimationSpeed(event.target.value as number);
-    };
-
     return (
       <div className={classes.root}>
         <AppBar position="static" className={classes.appBar} color="default">
@@ -120,6 +122,33 @@ const ToolBar: React.FC<IProps> = React.memo(
               <Typography variant="h6" className={classes.span}>
                 Algorithm Visualizer
               </Typography>
+
+              <div className="toolbar-speed">
+                <InputLabel style={{ color: "#fff" }} id="set-maze">
+                  Mazes & Patterns
+                </InputLabel>
+                <Select
+                  className={classes.setSpeed}
+                  labelId="set-maze"
+                  value={maze}
+                  onChange={handleMazeChange}
+                  inputProps={{
+                    classes: {
+                      icon: classes.setSpeedIcon,
+                    },
+                  }}
+                  disabled={isAnalyzing}
+                >
+                  <MenuItem value={"none"}>None</MenuItem>
+                  <MenuItem value={"recursive"}>Recursive Division</MenuItem>
+                  <MenuItem value={"recursive horizontal"}>
+                    Recursive Division (horizontal)
+                  </MenuItem>
+                  <MenuItem value={"recursive vertical"}>
+                    Recursive Division (vertical)
+                  </MenuItem>
+                </Select>
+              </div>
 
               <div className="toolbar-slider">
                 <Typography className={classes.span} id="discrete-slider">
@@ -138,6 +167,7 @@ const ToolBar: React.FC<IProps> = React.memo(
                   //@ts-ignore
                   onChangeCommitted={onGridSizeCommitted}
                   style={{ width: "100px" }}
+                  disabled={isAnalyzing}
                 />
               </div>
 
@@ -148,7 +178,6 @@ const ToolBar: React.FC<IProps> = React.memo(
                 <Select
                   className={classes.setSpeed}
                   labelId="set-speed"
-                  id="demo-simple-select"
                   value={animationSpeed}
                   onChange={handleSpeedChange}
                   inputProps={{
@@ -156,8 +185,9 @@ const ToolBar: React.FC<IProps> = React.memo(
                       icon: classes.setSpeedIcon,
                     },
                   }}
+                  disabled={isAnalyzing}
                 >
-                  <MenuItem value={50}>Snail</MenuItem>
+                  <MenuItem value={100}>Snail</MenuItem>
                   <MenuItem value={40}>Slower</MenuItem>
                   <MenuItem value={30}>Slow</MenuItem>
                   <MenuItem value={20}>Normal</MenuItem>
@@ -171,6 +201,7 @@ const ToolBar: React.FC<IProps> = React.memo(
                 className={classes.button}
                 onClick={clearAnalysis}
                 variant="contained"
+                disabled={isAnalyzing}
               >
                 Clear Analysis
               </Button>
@@ -179,6 +210,7 @@ const ToolBar: React.FC<IProps> = React.memo(
                 className={classes.button}
                 onClick={cleanGrid}
                 variant="contained"
+                disabled={isAnalyzing}
               >
                 Clear All
               </Button>
@@ -187,11 +219,16 @@ const ToolBar: React.FC<IProps> = React.memo(
                 className={classes.button}
                 onClick={resetGrid}
                 variant="contained"
+                disabled={isAnalyzing}
               >
                 Reset
               </Button>
 
-              <button onClick={toggleDarkMode} className="light-switch">
+              <button
+                onClick={toggleDarkMode}
+                className="light-switch"
+                disabled={isAnalyzing}
+              >
                 {isDarkMode ? (
                   <Brightness7
                     fontSize="large"
