@@ -5543,6 +5543,11 @@ he@^1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
+heap-js@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/heap-js/-/heap-js-2.1.4.tgz#5bbee30fcc0a4a9319a0f07bb1fb56fd6396feaa"
+  integrity sha512-BTqPQI5dN24wC+wiAEC3VWtHnGNH2fh64TGzlVr1a7Smp6bNdzezpybYUBw8/ZRvlh+qUylPE1YJbnWEx3Ge/g==
+
 hex-color-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/hex-color-regex/-/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"

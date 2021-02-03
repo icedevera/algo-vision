@@ -28,10 +28,18 @@ interface IProps {
   animationSpeed: number;
   clearAnalysis: () => void;
   setMaze: React.Dispatch<any>;
-  maze: "none" | "recursive" | "recursive horizontal" | "recursive vertical";
+  maze:
+    | "none"
+    | "recursive"
+    | "recursive horizontal"
+    | "recursive vertical"
+    | "spiral"
+    | "random";
   handleSpeedChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   handleMazeChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   isAnalyzing: boolean;
+  algorithm: "aStar" | "dijkstra";
+  handleAlgoChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -101,6 +109,8 @@ const ToolBar: React.FC<IProps> = React.memo(
     handleSpeedChange,
     handleMazeChange,
     isAnalyzing,
+    algorithm,
+    handleAlgoChange,
   }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
@@ -122,6 +132,27 @@ const ToolBar: React.FC<IProps> = React.memo(
               <Typography variant="h6" className={classes.span}>
                 Algorithm Visualizer
               </Typography>
+
+              <div className="toolbar-speed">
+                <InputLabel style={{ color: "#fff" }} id="set-algo">
+                  Algorithm
+                </InputLabel>
+                <Select
+                  className={classes.setSpeed}
+                  labelId="set-algo"
+                  value={algorithm}
+                  onChange={handleAlgoChange}
+                  inputProps={{
+                    classes: {
+                      icon: classes.setSpeedIcon,
+                    },
+                  }}
+                  disabled={isAnalyzing}
+                >
+                  <MenuItem value={"aStar"}>A* Search</MenuItem>
+                  <MenuItem value={"dijkstra"}>Dijkstra's Algorithm</MenuItem>
+                </Select>
+              </div>
 
               <div className="toolbar-speed">
                 <InputLabel style={{ color: "#fff" }} id="set-maze">
@@ -147,6 +178,8 @@ const ToolBar: React.FC<IProps> = React.memo(
                   <MenuItem value={"recursive vertical"}>
                     Recursive Division (vertical)
                   </MenuItem>
+                  <MenuItem value={"spiral"}>Spiral</MenuItem>
+                  <MenuItem value={"random"}>Random Barriers</MenuItem>
                 </Select>
               </div>
 
@@ -160,10 +193,10 @@ const ToolBar: React.FC<IProps> = React.memo(
                   defaultValue={gridSize}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
-                  step={10}
+                  step={5}
                   marks
-                  min={10}
-                  max={70}
+                  min={5}
+                  max={90}
                   //@ts-ignore
                   onChangeCommitted={onGridSizeCommitted}
                   style={{ width: "100px" }}

@@ -184,9 +184,27 @@ const Dijkstra = ({
     //keep going until all nodes has been processed
     node = findShortestDistanceNode(distances, analyzed);
 
-    if (node === `${endNode.x}-${endNode.y}`) {
+    //if endNode is popped from list, end search
+    if (
+      //top
+      (analyzed.includes(`${endNode.x}-${endNode.y - 1}`) ||
+        barriers.includes(`${endNode.x}-${endNode.y - 1}`)) &&
+      //right
+      (analyzed.includes(`${endNode.x + 1}-${endNode.y}`) ||
+        barriers.includes(`${endNode.x + 1}-${endNode.y}`)) &&
+      //bottom
+      (analyzed.includes(`${endNode.x}-${endNode.y + 1}`) ||
+        barriers.includes(`${endNode.x}-${endNode.y + 1}`)) &&
+      //left
+      (analyzed.includes(`${endNode.x - 1}-${endNode.y}`) ||
+        barriers.includes(`${endNode.x - 1}-${endNode.y}`))
+    ) {
       break;
     }
+
+    // if (node === `${endNode.x}-${endNode.y}`) {
+    //   break;
+    // }
   }
 
   //now that we looped through each node and found the shortest distance through each, we can now find the optimal path through a final function that looks through the parent object

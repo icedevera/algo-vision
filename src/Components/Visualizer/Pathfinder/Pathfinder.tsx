@@ -14,6 +14,9 @@ import {
   showShortestPath,
 } from "../../../Animation/Animate";
 import { recursiveDivisionMaze } from "../../../Maze/RecursizeDivision";
+import { RandomMaze } from "../../../Maze/Random";
+import { SpiralMaze } from "../../../Maze/Spiral";
+import { aStarIsBorn } from "../../../Algorithms/Pathfinding/aStar";
 
 interface IProps {
   isDarkMode: boolean;
@@ -66,8 +69,17 @@ const Pathfinder: React.FC<IProps> = React.memo(
     const [barriers, setBarriers] = React.useState<string[]>([]);
 
     const [maze, setMaze] = React.useState<
-      "none" | "recursive" | "recursive horizontal" | "recursive vertical"
+      | "none"
+      | "recursive"
+      | "recursive horizontal"
+      | "recursive vertical"
+      | "spiral"
+      | "random"
     >("none");
+
+    const [algorithm, setAlgorithm] = React.useState<"aStar" | "dijkstra">(
+      "dijkstra"
+    );
 
     const clearAnalysis = () => {
       setQuickAnalyze(false);
@@ -145,13 +157,31 @@ const Pathfinder: React.FC<IProps> = React.memo(
     const runAlgorithm = async () => {
       clearAnalysis();
       setIsAnalyzing(true);
-      const results = await Dijkstra({
-        screenSize,
-        startNode,
-        endNode,
-        barriers,
-        gridSize,
-      });
+      let totalRows = Math.floor((screenSize.height - 64) / (gridSize + 2));
+      let totalColumns = Math.floor(screenSize.width / (gridSize + 2));
+      let results: { analyzed: string[]; optimalPath: string[] } | undefined = {
+        analyzed: [],
+        optimalPath: [],
+      };
+      if (algorithm === "dijkstra") {
+        results = await Dijkstra({
+          screenSize,
+          startNode,
+          endNode,
+          barriers,
+          gridSize,
+        });
+      } else if (algorithm === "aStar") {
+        //@ts-ignore
+        results = await aStarIsBorn(
+          startNode,
+          endNode,
+          barriers,
+          totalColumns,
+          totalRows
+        );
+      }
+
       animateAlgorithm(
         //@ts-ignore
         results.analyzed,
@@ -226,6 +256,51 @@ const Pathfinder: React.FC<IProps> = React.memo(
         );
       };
 
+      const createRandomMaze = async () => {
+        setIsAnalyzing(true);
+        const totalRows =
+          Math.floor((screenSize.height - 64) / (gridSize + 2)) - 1;
+        const totalColumns = Math.floor(screenSize.width / (gridSize + 2)) - 1;
+        const totalSize = totalRows * totalColumns;
+        const iterationAmount = totalSize / 2.5;
+
+        const results = await RandomMaze(
+          startNode,
+          endNode,
+          totalRows,
+          totalColumns,
+          iterationAmount
+        );
+
+        await animateMaze(
+          results.barriers,
+          setBarriers,
+          animationSpeed,
+          setIsAnalyzing
+        );
+      };
+
+      const createSpiralMaze = async () => {
+        setIsAnalyzing(true);
+        const totalRows =
+          Math.floor((screenSize.height - 64) / (gridSize + 2)) - 1;
+        const totalColumns = Math.floor(screenSize.width / (gridSize + 2)) - 1;
+        const results = await SpiralMaze(
+          startNode,
+          endNode,
+          totalRows,
+          totalColumns
+        );
+
+        await animateMaze(
+          //@ts-ignore
+          results.barriers,
+          setBarriers,
+          animationSpeed,
+          setIsAnalyzing
+        );
+      };
+
       if (maze === "none") {
         clearBarriers();
       } else if (maze === "recursive") {
@@ -240,6 +315,14 @@ const Pathfinder: React.FC<IProps> = React.memo(
         cleanGrid();
         setMaze("recursive vertical");
         createMaze("vertical", "vertical");
+      } else if (maze === "spiral") {
+        cleanGrid();
+        setMaze("spiral");
+        createSpiralMaze();
+      } else if (maze === "random") {
+        cleanGrid();
+        setMaze("random");
+        createRandomMaze();
       }
       //eslint-disable-next-line
     }, [maze]);
@@ -268,6 +351,11 @@ const Pathfinder: React.FC<IProps> = React.memo(
       setMaze(event.target.value as string);
     };
 
+    const handleAlgoChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+      //@ts-ignore
+      setAlgorithm(event.target.value as string);
+    };
+
     return (
       <>
         <ToolBar
@@ -285,6 +373,8 @@ const Pathfinder: React.FC<IProps> = React.memo(
           handleSpeedChange={handleSpeedChange}
           handleMazeChange={handleMazeChange}
           isAnalyzing={isAnalyzing}
+          algorithm={algorithm}
+          handleAlgoChange={handleAlgoChange}
         />
         <div>
           <Grid
