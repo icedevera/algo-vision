@@ -22,6 +22,7 @@ export const SpiralMaze = (
   let barriers: string[] = [];
 
   while (true) {
+    //end case
     if (width / 2 + x > totalColumns && height / 2 - y > totalRows) {
       return { barriers };
     }
@@ -34,10 +35,14 @@ export const SpiralMaze = (
       !skip
     ) {
       if (
-        (width / 2 + x !== startNode.x || height / 2 - y !== startNode.y) &&
-        (width / 2 + x !== endNode.x || height / 2 - y !== endNode.y)
+        (Math.floor(width / 2 + x) !== startNode.x ||
+          Math.floor(height / 2 - y) !== startNode.y) &&
+        (Math.floor(width / 2 + x) !== endNode.x ||
+          Math.floor(height / 2 - y) !== endNode.y)
       ) {
-        barriers.push(`${width / 2 + x}-${height / 2 - y}`);
+        barriers.push(
+          `${Math.floor(width / 2 + x)}-${Math.floor(height / 2 - y)}`
+        );
       }
     }
     if (dx > 0) {

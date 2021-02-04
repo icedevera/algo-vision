@@ -40,12 +40,7 @@ export const aStarIsBorn = async (
 
   //search node in Heap
   const searchHeap = (nodeId: string) => {
-    for (const item of priorityHeap.heapArray) {
-      if (item.node === nodeId) {
-        return item;
-      }
-    }
-    return;
+    return graphMap.find((nodeValue) => nodeValue.node === nodeId);
   };
 
   //get neighbors of a node
@@ -98,49 +93,43 @@ export const aStarIsBorn = async (
     a.totalDistance - b.totalDistance;
   const priorityHeap = new Heap(customComparator);
 
-  let graphNodesValues: NodeValue[] = [];
+  let graphMap: NodeValue[] = [];
 
-  //initialize graph into priority heap
+  //initialize graph array
   for (let row = 0; row < totalRows; row++) {
     for (let col = 0; col < totalColumns; col++) {
-      graphNodesValues.push({
-        node: `${col}-${row}`,
-        totalDistance: Infinity,
-        distanceFromStart: Infinity,
-        distanceToEnd: Infinity,
-        cost: 1,
-        visited: false,
-        closed: false,
-        parent: null,
-      });
+      if (!barriers.includes(`${col}-${row}`)) {
+        graphMap.push({
+          node: `${col}-${row}`,
+          totalDistance: Infinity,
+          distanceFromStart: Infinity,
+          distanceToEnd: Infinity,
+          cost: 1,
+          visited: false,
+          closed: false,
+          parent: null,
+        });
+      }
     }
   }
 
-  //initialize priority heap with graph nodes and startnode
-  priorityHeap.addAll([
-    ...graphNodesValues,
-    {
-      node: `${startNode.x}-${startNode.y}`,
-      totalDistance: manhattanDistanceHeuristic(startNode, endNode),
-      distanceFromStart: 0,
-      distanceToEnd: manhattanDistanceHeuristic(startNode, endNode),
-      cost: 1,
-      visited: false,
-      closed: false,
-      parent: null,
-    },
-  ]);
+  let start = {
+    node: `${startNode.x}-${startNode.y}`,
+    totalDistance: manhattanDistanceHeuristic(startNode, endNode),
+    distanceFromStart: 0,
+    distanceToEnd: manhattanDistanceHeuristic(startNode, endNode),
+    cost: 1,
+    visited: false,
+    closed: false,
+    parent: null,
+  };
 
-  let optimalPath: string[] = [];
+  //return value needed for visualization
+  let optimalPath: string[] = [`${endNode.x}-${endNode.y}`];
   let analyzed: string[] = [];
 
-  // while (priorityHeap.size() > 0) {
-  //   let currentNode = priorityHeap.pop();
-  //   //@ts-ignore
-  //   let neighbors = getNeighbors(currentNode.node);
-  //   //@ts-ignore
-  //   console.log(currentNode.node, neighbors);
-  // }
+  // initialize priority heap with startnode
+  priorityHeap.add(start);
 
   while (priorityHeap.size() > 0) {
     // Grab the lowest f(x) to process next.  Heap keeps this sorted for us.

@@ -182,16 +182,20 @@ const Pathfinder: React.FC<IProps> = React.memo(
         );
       }
 
-      animateAlgorithm(
-        //@ts-ignore
-        results.analyzed,
-        //@ts-ignore
-        results.optimalPath,
-        animationSpeed,
-        startNode,
-        endNode,
-        setIsAnalyzing
-      );
+      if (results?.analyzed && results.optimalPath) {
+        animateAlgorithm(
+          //@ts-ignore
+          results.analyzed,
+          //@ts-ignore
+          results.optimalPath,
+          animationSpeed,
+          startNode,
+          endNode,
+          setIsAnalyzing
+        );
+      } else {
+        setIsAnalyzing(false);
+      }
 
       setQuickAnalyze(true);
     };
