@@ -17,6 +17,7 @@ import { recursiveDivisionMaze } from "../../../Maze/RecursizeDivision";
 import { RandomMaze } from "../../../Maze/Random";
 import { SpiralMaze } from "../../../Maze/Spiral";
 import { aStarIsBorn } from "../../../Algorithms/Pathfinding/aStar";
+import { GreedyBFS } from "../../../Algorithms/Pathfinding/GreedyBFS";
 
 interface IProps {
   isDarkMode: boolean;
@@ -50,7 +51,7 @@ const Pathfinder: React.FC<IProps> = React.memo(
 
     const [gridSize, setGridSize] = React.useState<number>(40);
 
-    const [animationSpeed, setAnimationSpeed] = React.useState<number>(20);
+    const [animationSpeed, setAnimationSpeed] = React.useState<number>(15);
 
     const [quickAnalyze, setQuickAnalyze] = React.useState<boolean>(false);
 
@@ -77,9 +78,9 @@ const Pathfinder: React.FC<IProps> = React.memo(
       | "random"
     >("none");
 
-    const [algorithm, setAlgorithm] = React.useState<"aStar" | "dijkstra">(
-      "dijkstra"
-    );
+    const [algorithm, setAlgorithm] = React.useState<
+      "aStar" | "dijkstra" | "greedy"
+    >("dijkstra");
 
     const clearAnalysis = () => {
       setQuickAnalyze(false);
@@ -178,7 +179,18 @@ const Pathfinder: React.FC<IProps> = React.memo(
           endNode,
           barriers,
           totalColumns,
-          totalRows
+          totalRows,
+          "astar"
+        );
+      } else if (algorithm === "greedy") {
+        //@ts-ignore
+        results = await GreedyBFS(
+          startNode,
+          endNode,
+          barriers,
+          totalColumns,
+          totalRows,
+          "greedy"
         );
       }
 
@@ -200,19 +212,49 @@ const Pathfinder: React.FC<IProps> = React.memo(
       setQuickAnalyze(true);
     };
 
-    //drag start node to quickly see shortest path analysis
+    //drag nodes to quickly see shortest path analysis
     React.useEffect(() => {
       const analyze = async () => {
         clearAnalysis();
         setQuickAnalyze(true);
-        let results = await Dijkstra({
-          screenSize,
-          startNode,
-          endNode,
-          barriers,
-          gridSize,
-        });
 
+        let totalRows = Math.floor((screenSize.height - 64) / (gridSize + 2));
+        let totalColumns = Math.floor(screenSize.width / (gridSize + 2));
+
+        let results:
+          | { analyzed: string[]; optimalPath: string[] }
+          | undefined = {
+          analyzed: [],
+          optimalPath: [],
+        };
+
+        if (algorithm === "dijkstra") {
+          results = await Dijkstra({
+            screenSize,
+            startNode,
+            endNode,
+            barriers,
+            gridSize,
+          });
+        } else if (algorithm === "aStar") {
+          results = await aStarIsBorn(
+            startNode,
+            endNode,
+            barriers,
+            totalColumns,
+            totalRows,
+            "astar"
+          );
+        } else if (algorithm === "greedy") {
+          results = await GreedyBFS(
+            startNode,
+            endNode,
+            barriers,
+            totalColumns,
+            totalRows,
+            "greedy"
+          );
+        }
         if (results) {
           showAlgorithm(results.analyzed, startNode, endNode);
           showShortestPath(results.optimalPath, startNode, endNode);
@@ -223,7 +265,7 @@ const Pathfinder: React.FC<IProps> = React.memo(
         analyze();
       }
       //eslint-disable-next-line
-    }, [startNode, endNode]);
+    }, [startNode, endNode, algorithm, barriers]);
 
     //create maze via the set algorithm
     React.useEffect(() => {

@@ -5,13 +5,13 @@ type coordinates = {
   y: number;
 };
 
-export const aStarIsBorn = (
+export const GreedyBFS = (
   startNode: coordinates,
   endNode: coordinates,
   barriers: string[],
   totalColumns: number,
   totalRows: number,
-  type: "astar"
+  type: "greedy"
 ) => {
   return BestFirstSearch(startNode, endNode, barriers, totalColumns, totalRows, type);
 };

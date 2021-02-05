@@ -38,7 +38,7 @@ interface IProps {
   handleSpeedChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   handleMazeChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   isAnalyzing: boolean;
-  algorithm: "aStar" | "dijkstra";
+  algorithm: "aStar" | "dijkstra" | "greedy";
   handleAlgoChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
 }
 
@@ -151,6 +151,7 @@ const ToolBar: React.FC<IProps> = React.memo(
                 >
                   <MenuItem value={"aStar"}>A* Search</MenuItem>
                   <MenuItem value={"dijkstra"}>Dijkstra's Algorithm</MenuItem>
+                  <MenuItem value={"greedy"}>Greedy Best-first Search</MenuItem>
                 </Select>
               </div>
 
@@ -221,12 +222,12 @@ const ToolBar: React.FC<IProps> = React.memo(
                   disabled={isAnalyzing}
                 >
                   <MenuItem value={100}>Snail</MenuItem>
-                  <MenuItem value={40}>Slower</MenuItem>
+                  <MenuItem value={60}>Slower</MenuItem>
                   <MenuItem value={30}>Slow</MenuItem>
-                  <MenuItem value={20}>Normal</MenuItem>
-                  <MenuItem value={10}>Fast</MenuItem>
-                  <MenuItem value={5}>Faster</MenuItem>
-                  <MenuItem value={1}>Lightning</MenuItem>
+                  <MenuItem value={15}>Normal</MenuItem>
+                  <MenuItem value={8}>Fast</MenuItem>
+                  <MenuItem value={2}>Faster</MenuItem>
+                  <MenuItem value={0}>Lightning</MenuItem>
                 </Select>
               </div>
 

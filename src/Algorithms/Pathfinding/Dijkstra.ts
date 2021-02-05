@@ -58,21 +58,29 @@ const Dijkstra = ({
   //set initial state of distances that track shortest distance to reach end node
   //accounting for barriers
   //top
-  const topDistance = !barriers.includes(`${startNode.x}-${startNode.y - 1}`)
-    ? { [`${startNode.x}-${startNode.y - 1}`]: 1 }
-    : null;
+  const topDistance =
+    !barriers.includes(`${startNode.x}-${startNode.y - 1}`) &&
+    startNode.y - 1 >= 0
+      ? { [`${startNode.x}-${startNode.y - 1}`]: 1 }
+      : null;
   //right
-  const rightDistance = !barriers.includes(`${startNode.x + 1}-${startNode.y}`)
-    ? { [`${startNode.x + 1}-${startNode.y}`]: 1 }
-    : null;
+  const rightDistance =
+    !barriers.includes(`${startNode.x + 1}-${startNode.y}`) &&
+    startNode.x + 1 < Math.floor(screenSize.width / (gridSize + 2))
+      ? { [`${startNode.x + 1}-${startNode.y}`]: 1 }
+      : null;
   //bottom
-  const bottomDistance = !barriers.includes(`${startNode.x}-${startNode.y + 1}`)
-    ? { [`${startNode.x}-${startNode.y + 1}`]: 1 }
-    : null;
+  const bottomDistance =
+    !barriers.includes(`${startNode.x}-${startNode.y + 1}`) &&
+    startNode.y + 1 < Math.floor((screenSize.height - 64) / (gridSize + 2))
+      ? { [`${startNode.x}-${startNode.y + 1}`]: 1 }
+      : null;
   //left
-  const leftDistance = !barriers.includes(`${startNode.x - 1}-${startNode.y}`)
-    ? { [`${startNode.x - 1}-${startNode.y}`]: 1 }
-    : null;
+  const leftDistance =
+    !barriers.includes(`${startNode.x - 1}-${startNode.y}`) &&
+    startNode.x - 1 >= 0
+      ? { [`${startNode.x - 1}-${startNode.y}`]: 1 }
+      : null;
 
   const distances: Distances = {
     [`${endNode.x}-${endNode.y}`]: Infinity,

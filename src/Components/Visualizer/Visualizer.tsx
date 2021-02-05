@@ -25,7 +25,6 @@ const Visualizer: React.FC<IProps> = ({ toggleDarkMode, isDarkMode }) => {
         height: window.innerHeight,
         width: window.innerWidth,
       });
-      console.log("resize");
     };
 
     window.addEventListener("resize", handleResize);
