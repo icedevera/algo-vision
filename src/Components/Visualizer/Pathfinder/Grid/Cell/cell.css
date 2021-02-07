@@ -6,6 +6,9 @@
   -ms-user-select: none;
   user-select: none;
   transition: transform 0.1s ease-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .green {

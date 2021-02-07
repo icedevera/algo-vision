@@ -11,6 +11,7 @@ import { useTheme } from "@material-ui/core/styles";
 import {
   animateAlgorithm,
   animateMaze,
+  animateRandomWeightMaze,
   showAlgorithm,
   showShortestPath,
 } from "../../../Animation/Animate";
@@ -88,7 +89,8 @@ const Pathfinder: React.FC<IProps> = React.memo(
       | "recursive horizontal"
       | "recursive vertical"
       | "spiral"
-      | "random"
+      | "random barriers"
+      | "random weights"
     >("none");
 
     const [algorithm, setAlgorithm] = React.useState<
@@ -361,7 +363,7 @@ const Pathfinder: React.FC<IProps> = React.memo(
         );
       };
 
-      const createRandomMaze = async () => {
+      const createRandomBarrierMaze = async () => {
         setIsAnalyzing(true);
         const totalRows =
           Math.floor((screenSize.height - 64) / (gridSize + 2)) - 1;
@@ -380,6 +382,32 @@ const Pathfinder: React.FC<IProps> = React.memo(
         await animateMaze(
           results.barriers,
           setBarriers,
+          animationSpeed,
+          setIsAnalyzing
+        );
+      };
+
+      const createRandomWeightsMaze = async () => {
+        setIsAnalyzing(true);
+
+        const totalRows =
+          Math.floor((screenSize.height - 64) / (gridSize + 2)) - 1;
+        const totalColumns = Math.floor(screenSize.width / (gridSize + 2)) - 1;
+        const totalSize = totalRows * totalColumns;
+        const iterationAmount = totalSize / 1.7;
+
+        const results = await RandomMaze(
+          startNode,
+          endNode,
+          totalRows,
+          totalColumns,
+          iterationAmount
+        );
+
+        await animateRandomWeightMaze(
+          results.barriers,
+          setWeights,
+          weightSize,
           animationSpeed,
           setIsAnalyzing
         );
@@ -424,10 +452,14 @@ const Pathfinder: React.FC<IProps> = React.memo(
         cleanGrid();
         setMaze("spiral");
         createSpiralMaze();
-      } else if (maze === "random") {
+      } else if (maze === "random barriers") {
         cleanGrid();
-        setMaze("random");
-        createRandomMaze();
+        setMaze("random barriers");
+        createRandomBarrierMaze();
+      } else if (maze === "random weights") {
+        cleanGrid();
+        setMaze("random weights");
+        createRandomWeightsMaze();
       }
       //eslint-disable-next-line
     }, [maze]);

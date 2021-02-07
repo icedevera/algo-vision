@@ -34,7 +34,8 @@ interface IProps {
     | "recursive horizontal"
     | "recursive vertical"
     | "spiral"
-    | "random";
+    | "random barriers"
+    | "random weights";
   handleSpeedChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   handleMazeChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   isAnalyzing: boolean;
@@ -188,7 +189,8 @@ const ToolBar: React.FC<IProps> = React.memo(
                     Recursive Division (vertical)
                   </MenuItem>
                   <MenuItem value={"spiral"}>Spiral</MenuItem>
-                  <MenuItem value={"random"}>Random Barriers</MenuItem>
+                  <MenuItem value={"random barriers"}>Random Barriers</MenuItem>
+                  <MenuItem value={"random weights"}>Random Weights</MenuItem>
                 </Select>
               </div>
 

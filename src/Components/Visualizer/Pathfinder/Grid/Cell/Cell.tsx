@@ -104,22 +104,30 @@ const Cell: React.FC<IProps> = React.memo(
       }
     };
 
-    React.useEffect(() => {
-      if (weights.find((weightNode) => weightNode.node === id)) {
-        return;
-      } else {
-        setWeightOfNode(1);
-      }
-    }, [weights, id]);
-
     const addWeight = (weightSize: number) => {
-      setWeights((prev: Weights[]) => [
-        ...prev,
-        {
-          node: id,
+      //update weight if weight already exists
+      if (weights.find((weightNode) => weightNode.node === id)) {
+        let weightNodeIndex = weights.findIndex(
+          (weightNode) => weightNode.node === id
+        );
+
+        let newWeightsState = [...weights];
+
+        newWeightsState[weightNodeIndex] = {
+          ...newWeightsState[weightNodeIndex],
           size: weightSize,
-        },
-      ]);
+        };
+
+        setWeights(newWeightsState);
+      } else {
+        setWeights((prev: Weights[]) => [
+          ...prev,
+          {
+            node: id,
+            size: weightSize,
+          },
+        ]);
+      }
       setWeightOfNode(weightSize);
     };
 
@@ -134,6 +142,20 @@ const Cell: React.FC<IProps> = React.memo(
 
       setWeightOfNode(1);
     };
+
+    React.useEffect(() => {
+      if (weights.find((weightNode) => weightNode.node === id)) {
+        if (isAnalyzing) {
+          let weightIndex = weights.findIndex(
+            (weightNode) => weightNode.node === id
+          );
+          setWeightOfNode(weights[weightIndex].size);
+        }
+        return;
+      } else {
+        setWeightOfNode(1);
+      }
+    }, [weights, id, isAnalyzing]);
 
     const handleMouseDown = () => {
       if (isStartNode && !isAnalyzing) {
@@ -162,6 +184,7 @@ const Cell: React.FC<IProps> = React.memo(
           if (weightOfNode > 1) {
             removeWeight();
           }
+          //if weights
         } else {
           setMouseDown(true);
           if (cellElement && cellElement.classList.contains("barrier-node")) {

@@ -123,3 +123,33 @@ export const animateMaze = (
     }, animationSpeed * 2 * i);
   }
 };
+
+export const animateRandomWeightMaze = (
+  weights: string[],
+  setWeights: React.Dispatch<any>,
+  weightSize: number,
+  animationSpeed: number,
+  setIsAnalyzing: React.Dispatch<any>
+) => {
+  type Weight = {
+    node: string;
+    size: number;
+  };
+
+  for (let i = 0; i < weights.length; i++) {
+    setTimeout(() => {
+      const node = weights[i];
+      setWeights((prev: Weight[]) => [
+        ...prev,
+        {
+          node: node,
+          size: weightSize,
+        },
+      ]);
+
+      if (i === weights.length - 1) {
+        setIsAnalyzing(false);
+      }
+    }, animationSpeed * 2 * i);
+  }
+};
