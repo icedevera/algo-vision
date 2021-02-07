@@ -8,6 +8,11 @@ type coordinates = {
   y: number;
 };
 
+type Weights = {
+  node: string;
+  size: number;
+};
+
 interface IProps {
   id: string;
   coordinates: coordinates;
@@ -23,8 +28,11 @@ interface IProps {
   mouseDown: boolean;
   setMouseDown: React.Dispatch<any>;
   gridSize: number;
-
   isAnalyzing: boolean;
+  weightSize: number;
+  leftClickState: "barriers" | "weights";
+  setWeights: React.Dispatch<any>;
+  weights: Weights[];
 }
 
 const Cell: React.FC<IProps> = React.memo(
@@ -43,15 +51,23 @@ const Cell: React.FC<IProps> = React.memo(
     setBarriers,
     mouseDown,
     setMouseDown,
-
     isAnalyzing,
+    weightSize,
+    leftClickState,
+    setWeights,
+    weights,
   }) => {
     const theme = useTheme();
 
     const [hoverGreen, setHoverGreen] = React.useState<boolean>(false);
     const [hoverRed, setHoverRed] = React.useState<boolean>(false);
 
+    //was variables to bring back the barrier/weight if start or end node is being changed
     const [wasBarrier, setWasBarrier] = React.useState<boolean>(false);
+
+    const [wasWeight, setWasWeight] = React.useState<number>(1);
+
+    const [weightOfNode, setWeightOfNode] = React.useState<number>(1);
 
     var isStartNode =
       coordinates.x === startNode.x && coordinates.y === startNode.y;
@@ -88,6 +104,37 @@ const Cell: React.FC<IProps> = React.memo(
       }
     };
 
+    React.useEffect(() => {
+      if (weights.find((weightNode) => weightNode.node === id)) {
+        return;
+      } else {
+        setWeightOfNode(1);
+      }
+    }, [weights, id]);
+
+    const addWeight = (weightSize: number) => {
+      setWeights((prev: Weights[]) => [
+        ...prev,
+        {
+          node: id,
+          size: weightSize,
+        },
+      ]);
+      setWeightOfNode(weightSize);
+    };
+
+    const removeWeight = () => {
+      let prevState = weights;
+      let removeIndex = prevState.findIndex(
+        (nodeWeight) => nodeWeight.node === id
+      );
+      let newState = prevState.splice(removeIndex, 1);
+
+      setWeights(newState);
+
+      setWeightOfNode(1);
+    };
+
     const handleMouseDown = () => {
       if (isStartNode && !isAnalyzing) {
         setIsStartNodeDragging(true);
@@ -104,16 +151,32 @@ const Cell: React.FC<IProps> = React.memo(
         !isEndNodeDragging &&
         !isAnalyzing
       ) {
-        setMouseDown(true);
-        if (cellElement && cellElement.classList.contains("barrier-node")) {
-          removeBarrier();
+        if (leftClickState === "barriers") {
+          setMouseDown(true);
+          if (cellElement && cellElement.classList.contains("barrier-node")) {
+            removeBarrier();
+          } else {
+            addBarrier();
+          }
+
+          if (weightOfNode > 1) {
+            removeWeight();
+          }
         } else {
-          addBarrier();
+          setMouseDown(true);
+          if (cellElement && cellElement.classList.contains("barrier-node")) {
+            removeBarrier();
+          }
+          addWeight(weightSize);
         }
       }
 
       if (wasBarrier) {
         setWasBarrier(false);
+      }
+
+      if (wasWeight > 1) {
+        setWasWeight(1);
       }
 
       return;
@@ -123,26 +186,39 @@ const Cell: React.FC<IProps> = React.memo(
       if (isStartNodeDragging) {
         if (cellElement && cellElement.classList.contains("barrier-node")) {
           setWasBarrier(true);
+          removeBarrier();
+        } else if (weightOfNode > 1) {
+          setWasWeight(weightOfNode);
+          removeWeight();
         }
-        setStartNode(coordinates);
-        removeBarrier();
 
+        setStartNode(coordinates);
         setHoverGreen(true);
       }
       if (isEndNodeDragging) {
         if (cellElement && cellElement.classList.contains("barrier-node")) {
           setWasBarrier(true);
-
-          setEndNode(coordinates);
           removeBarrier();
+        } else if (weightOfNode > 1) {
+          removeWeight();
+          setWasWeight(weightOfNode);
         }
+        setEndNode(coordinates);
         setHoverRed(true);
       }
+
       if (mouseDown && !isStartNode && !isEndNode && !isAnalyzing) {
-        if (cellElement && cellElement.classList.contains("barrier-node")) {
-          removeBarrier();
+        if (leftClickState === "barriers") {
+          if (cellElement && cellElement.classList.contains("barrier-node")) {
+            removeBarrier();
+          } else {
+            addBarrier();
+          }
         } else {
-          addBarrier();
+          if (cellElement && cellElement.classList.contains("barrier-node")) {
+            removeBarrier();
+          }
+          addWeight(weightSize);
         }
       }
       return;
@@ -153,11 +229,17 @@ const Cell: React.FC<IProps> = React.memo(
         if (wasBarrier) {
           addBarrier();
         }
+        if (wasWeight > 1) {
+          addWeight(wasWeight);
+        }
         setHoverGreen(false);
       }
       if (isEndNodeDragging) {
         if (wasBarrier) {
           addBarrier();
+        }
+        if (wasWeight > 1) {
+          addWeight(wasWeight);
         }
         setHoverRed(false);
       }
@@ -168,12 +250,19 @@ const Cell: React.FC<IProps> = React.memo(
       if (isStartNodeDragging) {
         setIsStartNodeDragging(false);
         setStartNode(coordinates);
+        if (weightOfNode > 1) {
+          removeWeight();
+        }
       }
 
       if (isEndNodeDragging) {
         setIsEndNodeDragging(false);
         setEndNode(coordinates);
+        if (weightOfNode > 1) {
+          removeWeight();
+        }
       }
+
       if (mouseDown) {
         setMouseDown(false);
       }
@@ -208,7 +297,9 @@ const Cell: React.FC<IProps> = React.memo(
         onMouseUp={handleMouseUp}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-      />
+      >
+        {weightOfNode > 1 ? weightOfNode : null}
+      </div>
     );
   }
 );

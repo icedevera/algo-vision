@@ -1,4 +1,10 @@
 .cell-node {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   transition: transform 0.1s ease-out;
 }
 
@@ -17,7 +23,6 @@
 .light-node {
   background-color: #fff;
 }
-
 
 .barrier-node {
   background-color: #9c27b0;
@@ -50,7 +55,6 @@
     background-color: #9c27b0;
   }
 }
-
 
 .cell-node:hover {
   transform: scale(1.4);

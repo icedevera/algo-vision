@@ -40,6 +40,10 @@ interface IProps {
   isAnalyzing: boolean;
   algorithm: "aStar" | "dijkstra" | "greedy";
   handleAlgoChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  handleLeftClickState: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  leftClickState: "barriers" | "weights";
+  weightSize: number;
+  onWeightSizeChange: (event: object, value: number) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -111,6 +115,10 @@ const ToolBar: React.FC<IProps> = React.memo(
     isAnalyzing,
     algorithm,
     handleAlgoChange,
+    handleLeftClickState,
+    leftClickState,
+    weightSize,
+    onWeightSizeChange,
   }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
@@ -183,6 +191,50 @@ const ToolBar: React.FC<IProps> = React.memo(
                   <MenuItem value={"random"}>Random Barriers</MenuItem>
                 </Select>
               </div>
+
+              <div className="left-click-state">
+                <InputLabel style={{ color: "#fff" }} id="set-maze">
+                  Left Click Action
+                </InputLabel>
+                <Select
+                  className={classes.setSpeed}
+                  labelId="set-maze"
+                  value={leftClickState}
+                  onChange={handleLeftClickState}
+                  inputProps={{
+                    classes: {
+                      icon: classes.setSpeedIcon,
+                    },
+                  }}
+                  disabled={isAnalyzing}
+                >
+                  <MenuItem value={"barriers"}>Barriers</MenuItem>
+                  <MenuItem value={"weights"}>Weights</MenuItem>
+                </Select>
+              </div>
+
+              {leftClickState === "weights" ? (
+                <div className="toolbar-slider">
+                  <Typography className={classes.span} id="discrete-slider">
+                    Weight Size
+                  </Typography>
+                  <ToolSlider
+                    key={`slider-gridSize`}
+                    className={classes.slider}
+                    defaultValue={weightSize}
+                    aria-labelledby="discrete-slider"
+                    valueLabelDisplay="auto"
+                    step={1}
+                    marks
+                    min={1}
+                    max={100}
+                    //@ts-ignore
+                    onChangeCommitted={onWeightSizeChange}
+                    style={{ width: "100px" }}
+                    disabled={isAnalyzing}
+                  />
+                </div>
+              ) : null}
 
               <div className="toolbar-slider">
                 <Typography className={classes.span} id="discrete-slider">

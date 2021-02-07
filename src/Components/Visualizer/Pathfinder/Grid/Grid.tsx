@@ -7,6 +7,11 @@ type coordinates = {
   y: number;
 };
 
+type Weights = {
+  node: string;
+  size: number;
+};
+
 interface IProps {
   startNode: coordinates;
   setStartNode: React.Dispatch<any>;
@@ -19,6 +24,10 @@ interface IProps {
   setBarriers: React.Dispatch<any>;
   gridSize: number;
   isAnalyzing: boolean;
+  weightSize: number;
+  leftClickState: "barriers" | "weights";
+  setWeights: React.Dispatch<any>;
+  weights: Weights[];
 }
 
 const Grid: React.FC<IProps> = React.memo(
@@ -30,7 +39,11 @@ const Grid: React.FC<IProps> = React.memo(
     setEndNode,
     setBarriers,
     gridSize,
-    isAnalyzing
+    isAnalyzing,
+    weightSize,
+    leftClickState,
+    setWeights,
+    weights
   }) => {
     const [
       isStartNodeDragging,
@@ -71,6 +84,10 @@ const Grid: React.FC<IProps> = React.memo(
                 mouseDown={mouseDown}
                 setMouseDown={setMouseDown}
                 isAnalyzing={isAnalyzing}
+                weightSize={weightSize}
+                leftClickState={leftClickState}
+                setWeights={setWeights}
+                weights={weights}
               />
             </td>
           );

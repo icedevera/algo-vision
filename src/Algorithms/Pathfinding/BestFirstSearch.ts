@@ -5,13 +5,19 @@ type coordinates = {
   y: number;
 };
 
+type Weights = {
+  node: string;
+  size: number;
+};
+
 export const BestFirstSearch = async (
   startNode: coordinates,
   endNode: coordinates,
   barriers: string[],
   totalColumns: number,
   totalRows: number,
-  type: "astar" | "greedy"
+  type: "astar" | "greedy",
+  weights: Weights[]
 ) => {
   //type of each node that will contain the data we need
   type NodeValue = {
@@ -33,8 +39,8 @@ export const BestFirstSearch = async (
     nodeOne: coordinates,
     nodeTwo: coordinates
   ) => {
-    let xChange = Math.abs(nodeOne.x - nodeTwo.x);
-    let yChange = Math.abs(nodeOne.y - nodeTwo.y);
+    let xChange = Math.abs(nodeTwo.x - nodeOne.x);
+    let yChange = Math.abs(nodeTwo.y - nodeOne.y);
 
     return xChange + yChange;
   };
@@ -42,6 +48,16 @@ export const BestFirstSearch = async (
   //search node in Heap
   const searchHeap = (nodeId: string) => {
     return graphMap.find((nodeValue) => nodeValue.node === nodeId);
+  };
+
+  //find weight of node from weights
+  const findWeight = (node: string) => {
+    let weightIndex = weights.findIndex(
+      (weightedNode) => weightedNode.node === node
+    );
+    let weight = weightIndex >= 0 ? weights[weightIndex].size : 1;
+
+    return weight;
   };
 
   //get neighbors of a node
@@ -105,7 +121,7 @@ export const BestFirstSearch = async (
           priorityScore: Infinity,
           distanceFromStart: Infinity,
           distanceToEnd: Infinity,
-          cost: 1,
+          cost: findWeight(`${col}-${row}`),
           visited: false,
           closed: false,
           parent: null,
@@ -128,6 +144,7 @@ export const BestFirstSearch = async (
   //return value needed for visualization
   let optimalPath: string[] = [`${endNode.x}-${endNode.y}`];
   let analyzed: string[] = [];
+  let distance: number = 0;
 
   // initialize priority heap with startnode
   priorityHeap.add(start);
@@ -137,12 +154,18 @@ export const BestFirstSearch = async (
     // Grab the lowest f(x) to process next.  Heap keeps this sorted for us.
     let currentNode = priorityHeap.pop();
 
-    //@ts-ignore
-    analyzed.push(currentNode?.node);
+    if (
+      currentNode?.node !== `${startNode.x}-${startNode.y}` &&
+      currentNode?.node !== `${endNode.x}-${endNode.y}`
+    ) {
+      //@ts-ignore
+      analyzed.push(currentNode?.node);
+    }
 
     //end case --> A Star is Born
     if (currentNode?.node === `${endNode.x}-${endNode.y}`) {
       let current = currentNode;
+      distance = current.distanceFromStart - 1;
       let returnValue = [];
       //trace back to start node by looking at parents
       while (current.parent) {
@@ -151,7 +174,8 @@ export const BestFirstSearch = async (
       }
 
       optimalPath = returnValue.reverse();
-      return { analyzed, optimalPath };
+
+      return { analyzed, optimalPath, distance: distance };
     }
 
     //Normal case -- move currentNode from open to closed and process its neighbors
@@ -173,7 +197,7 @@ export const BestFirstSearch = async (
       //g score is the shortest distance from start to current
       //check if the path to this neighbor is the shortest one yet
       //@ts-ignore
-      let gScore = currentNode?.distanceFromStart + currentNode.cost;
+      let gScore = currentNode?.distanceFromStart + neighbor.cost;
       let beenVisited = neighbor.visited;
       let neighborCoordinates = {
         x: parseInt(neighbor.node.split("-")[0]),
@@ -181,9 +205,7 @@ export const BestFirstSearch = async (
       };
 
       //@ts-ignore
-      if (!beenVisited || gScore < neighbor.g) {
-        // //@ts-ignore
-        // analyzed.push(neighbor.node);
+      if (!beenVisited || gScore < neighbor.distanceFromStart) {
         //found a better path. Record the path for future iterations
         neighbor.visited = true;
         //@ts-ignore
@@ -196,8 +218,8 @@ export const BestFirstSearch = async (
         neighbor.distanceFromStart = gScore;
         neighbor.priorityScore =
           type === "astar"
-            ? neighbor.distanceFromStart + neighbor.distanceToEnd
-            : neighbor.distanceToEnd;
+            ? gScore + neighbor.distanceToEnd
+            : neighbor.distanceToEnd + neighbor.cost;
 
         if (!beenVisited) {
           //pushing to heap will put it in its proper place
@@ -211,5 +233,5 @@ export const BestFirstSearch = async (
     }
   }
 
-  return { analyzed, optimalPath };
+  return { analyzed, optimalPath, distance: distance };
 };

@@ -1,5 +1,6 @@
 import React from "react";
 
+import "./pathfinder.css";
 import Grid from "./Grid/Grid";
 import ToolBar from "../../ToolBar/ToolBar";
 import Fab from "@material-ui/core/Fab";
@@ -18,6 +19,9 @@ import { RandomMaze } from "../../../Maze/Random";
 import { SpiralMaze } from "../../../Maze/Spiral";
 import { aStarIsBorn } from "../../../Algorithms/Pathfinding/aStar";
 import { GreedyBFS } from "../../../Algorithms/Pathfinding/GreedyBFS";
+import Snackbar from "@material-ui/core/Snackbar";
+import { IconButton } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 
 interface IProps {
   isDarkMode: boolean;
@@ -69,6 +73,15 @@ const Pathfinder: React.FC<IProps> = React.memo(
 
     const [barriers, setBarriers] = React.useState<string[]>([]);
 
+    const [weightSize, setWeightSize] = React.useState<number>(5);
+
+    type Weights = {
+      node: string;
+      size: number;
+    };
+
+    const [weights, setWeights] = React.useState<Weights[]>([]);
+
     const [maze, setMaze] = React.useState<
       | "none"
       | "recursive"
@@ -81,6 +94,16 @@ const Pathfinder: React.FC<IProps> = React.memo(
     const [algorithm, setAlgorithm] = React.useState<
       "aStar" | "dijkstra" | "greedy"
     >("dijkstra");
+
+    const [openResults, setOpenResults] = React.useState<boolean>(false);
+
+    const [algoDuration, setAlgoDuration] = React.useState<number>(0);
+    const [algoAnalyzed, setAlgoAnalyzed] = React.useState<number>(0);
+    const [algoDistance, setAlgoDistance] = React.useState<number>(0);
+
+    const [leftClickState, setLeftClickState] = React.useState<
+      "barriers" | "weights"
+    >("barriers");
 
     const clearAnalysis = () => {
       setQuickAnalyze(false);
@@ -117,9 +140,14 @@ const Pathfinder: React.FC<IProps> = React.memo(
       setBarriers([]);
     };
 
+    const clearWeights = () => {
+      setWeights([]);
+    };
+
     const resetGrid = () => {
       clearAnalysis();
       clearBarriers();
+      clearWeights();
       if (
         startNode.x !== Math.round(screenSize.width / (gridSize + 2) / 3) ||
         startNode.y !== Math.round(screenSize.height / (gridSize + 2) / 2.5)
@@ -153,16 +181,22 @@ const Pathfinder: React.FC<IProps> = React.memo(
     const cleanGrid = () => {
       clearAnalysis();
       clearBarriers();
+      clearWeights();
     };
 
     const runAlgorithm = async () => {
       clearAnalysis();
       setIsAnalyzing(true);
+      let startTime = performance.now();
+      let endTime = 0;
       let totalRows = Math.floor((screenSize.height - 64) / (gridSize + 2));
       let totalColumns = Math.floor(screenSize.width / (gridSize + 2));
-      let results: { analyzed: string[]; optimalPath: string[] } | undefined = {
+      let results:
+        | { analyzed: string[]; optimalPath: string[]; distance: number }
+        | undefined = {
         analyzed: [],
         optimalPath: [],
+        distance: 0,
       };
       if (algorithm === "dijkstra") {
         results = await Dijkstra({
@@ -171,7 +205,9 @@ const Pathfinder: React.FC<IProps> = React.memo(
           endNode,
           barriers,
           gridSize,
+          weights,
         });
+        endTime = performance.now();
       } else if (algorithm === "aStar") {
         //@ts-ignore
         results = await aStarIsBorn(
@@ -180,8 +216,10 @@ const Pathfinder: React.FC<IProps> = React.memo(
           barriers,
           totalColumns,
           totalRows,
-          "astar"
+          "astar",
+          weights
         );
+        endTime = performance.now();
       } else if (algorithm === "greedy") {
         //@ts-ignore
         results = await GreedyBFS(
@@ -190,12 +228,14 @@ const Pathfinder: React.FC<IProps> = React.memo(
           barriers,
           totalColumns,
           totalRows,
-          "greedy"
+          "greedy",
+          weights
         );
+        endTime = performance.now();
       }
 
-      if (results?.analyzed && results.optimalPath) {
-        animateAlgorithm(
+      if (results) {
+        await animateAlgorithm(
           //@ts-ignore
           results.analyzed,
           //@ts-ignore
@@ -205,6 +245,11 @@ const Pathfinder: React.FC<IProps> = React.memo(
           endNode,
           setIsAnalyzing
         );
+
+        setAlgoDistance(results.distance);
+        setAlgoAnalyzed(results.analyzed.length);
+        setAlgoDuration(Math.floor(endTime - startTime));
+        setOpenResults(true);
       } else {
         setIsAnalyzing(false);
       }
@@ -217,15 +262,18 @@ const Pathfinder: React.FC<IProps> = React.memo(
       const analyze = async () => {
         clearAnalysis();
         setQuickAnalyze(true);
+        let startTime = performance.now();
+        let endTime = 0;
 
         let totalRows = Math.floor((screenSize.height - 64) / (gridSize + 2));
         let totalColumns = Math.floor(screenSize.width / (gridSize + 2));
 
         let results:
-          | { analyzed: string[]; optimalPath: string[] }
+          | { analyzed: string[]; optimalPath: string[]; distance: number }
           | undefined = {
           analyzed: [],
           optimalPath: [],
+          distance: 0,
         };
 
         if (algorithm === "dijkstra") {
@@ -235,7 +283,9 @@ const Pathfinder: React.FC<IProps> = React.memo(
             endNode,
             barriers,
             gridSize,
+            weights,
           });
+          endTime = performance.now();
         } else if (algorithm === "aStar") {
           results = await aStarIsBorn(
             startNode,
@@ -243,8 +293,10 @@ const Pathfinder: React.FC<IProps> = React.memo(
             barriers,
             totalColumns,
             totalRows,
-            "astar"
+            "astar",
+            weights
           );
+          endTime = performance.now();
         } else if (algorithm === "greedy") {
           results = await GreedyBFS(
             startNode,
@@ -252,12 +304,19 @@ const Pathfinder: React.FC<IProps> = React.memo(
             barriers,
             totalColumns,
             totalRows,
-            "greedy"
+            "greedy",
+            weights
           );
+          endTime = performance.now();
         }
         if (results) {
           showAlgorithm(results.analyzed, startNode, endNode);
           showShortestPath(results.optimalPath, startNode, endNode);
+          //log results for showing
+          setAlgoDistance(results.distance);
+          setAlgoAnalyzed(results.analyzed.length);
+          setAlgoDuration(Math.floor(endTime - startTime));
+          setOpenResults(true);
         }
       };
 
@@ -265,7 +324,7 @@ const Pathfinder: React.FC<IProps> = React.memo(
         analyze();
       }
       //eslint-disable-next-line
-    }, [startNode, endNode, algorithm, barriers]);
+    }, [startNode, endNode, algorithm, barriers, weights]);
 
     //create maze via the set algorithm
     React.useEffect(() => {
@@ -402,6 +461,17 @@ const Pathfinder: React.FC<IProps> = React.memo(
       setAlgorithm(event.target.value as string);
     };
 
+    const handleLeftClickState = (
+      event: React.ChangeEvent<{ value: unknown }>
+    ) => {
+      //@ts-ignore
+      setLeftClickState(event.target.value as string);
+    };
+
+    const onWeightSizeChange = (event: object, value: number) => {
+      setWeightSize(value);
+    };
+
     return (
       <>
         <ToolBar
@@ -421,6 +491,47 @@ const Pathfinder: React.FC<IProps> = React.memo(
           isAnalyzing={isAnalyzing}
           algorithm={algorithm}
           handleAlgoChange={handleAlgoChange}
+          handleLeftClickState={handleLeftClickState}
+          leftClickState={leftClickState}
+          weightSize={weightSize}
+          onWeightSizeChange={onWeightSizeChange}
+        />
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          open={openResults}
+          autoHideDuration={null}
+          onClose={() => setOpenResults(false)}
+          message={
+            <>
+              <div className="snack-bar-line">
+                <p style={{ marginRight: "10px" }}>Distance:</p>
+                <h3>{algoDistance}</h3>
+              </div>
+              <div className="snack-bar-line">
+                <p style={{ marginRight: "10px" }}>Analyzed Nodes:</p>
+                <h3>{algoAnalyzed}</h3>
+              </div>
+              <div className="snack-bar-line">
+                <p style={{ marginRight: "10px" }}>Duration:</p>
+                <h3>{algoDuration}ms</h3>
+              </div>
+            </>
+          }
+          action={
+            <React.Fragment>
+              <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={() => setOpenResults(false)}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </React.Fragment>
+          }
         />
         <div>
           <Grid
@@ -432,6 +543,10 @@ const Pathfinder: React.FC<IProps> = React.memo(
             setEndNode={setEndNode}
             setBarriers={setBarriers}
             isAnalyzing={isAnalyzing}
+            weightSize={weightSize}
+            leftClickState={leftClickState}
+            setWeights={setWeights}
+            weights={weights}
           />
           <div className={classes.runAlgorithm}>
             <Fab

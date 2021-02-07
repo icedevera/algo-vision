@@ -3,12 +3,18 @@ type coordinates = {
   y: number;
 };
 
+type Weights = {
+  node: string;
+  size: number;
+};
+
 interface IProps {
   startNode: coordinates;
   endNode: coordinates;
   screenSize: { width: number; height: number };
   barriers: string[];
   gridSize: number;
+  weights: Weights[];
 }
 
 const Dijkstra = ({
@@ -17,6 +23,7 @@ const Dijkstra = ({
   screenSize,
   barriers,
   gridSize,
+  weights,
 }: IProps) => {
   type Distances = {
     [node: string]: number;
@@ -45,6 +52,16 @@ const Dijkstra = ({
     return shortestDistanceNode;
   };
 
+  //find weight of node from weights
+  const findWeight = (node: string) => {
+    let weightIndex = weights.findIndex(
+      (weightedNode) => weightedNode.node === node
+    );
+    let weight = weightIndex >= 0 ? weights[weightIndex].size : 1;
+
+    return weight;
+  };
+
   //if finish node is right next to startnode, finish algo
   if (
     (startNode.x === endNode.x && startNode.y - 1 === endNode.y) ||
@@ -52,34 +69,60 @@ const Dijkstra = ({
     (startNode.x === endNode.x && startNode.y + 1 === endNode.y) ||
     (startNode.x - 1 === endNode.x && startNode.y === endNode.y)
   ) {
-    return { analyzed: [], optimalPath: [] };
+    return {
+      analyzed: [`${startNode.x}-${startNode.y}`, `${endNode.x}-${endNode.y}`],
+      optimalPath: [
+        `${startNode.x}-${startNode.y}`,
+        `${endNode.x}-${endNode.y}`,
+      ],
+      distance: 0,
+    };
   }
+
+
 
   //set initial state of distances that track shortest distance to reach end node
   //accounting for barriers
+  //accounting for weights
   //top
   const topDistance =
     !barriers.includes(`${startNode.x}-${startNode.y - 1}`) &&
     startNode.y - 1 >= 0
-      ? { [`${startNode.x}-${startNode.y - 1}`]: 1 }
+      ? {
+          [`${startNode.x}-${startNode.y - 1}`]: findWeight(
+            `${startNode.x}-${startNode.y - 1}`
+          ),
+        }
       : null;
   //right
   const rightDistance =
     !barriers.includes(`${startNode.x + 1}-${startNode.y}`) &&
     startNode.x + 1 < Math.floor(screenSize.width / (gridSize + 2))
-      ? { [`${startNode.x + 1}-${startNode.y}`]: 1 }
+      ? {
+          [`${startNode.x + 1}-${startNode.y}`]: findWeight(
+            `${startNode.x + 1}-${startNode.y}`
+          ),
+        }
       : null;
   //bottom
   const bottomDistance =
     !barriers.includes(`${startNode.x}-${startNode.y + 1}`) &&
     startNode.y + 1 < Math.floor((screenSize.height - 64) / (gridSize + 2))
-      ? { [`${startNode.x}-${startNode.y + 1}`]: 1 }
+      ? {
+          [`${startNode.x}-${startNode.y + 1}`]: findWeight(
+            `${startNode.x}-${startNode.y + 1}`
+          ),
+        }
       : null;
   //left
   const leftDistance =
     !barriers.includes(`${startNode.x - 1}-${startNode.y}`) &&
     startNode.x - 1 >= 0
-      ? { [`${startNode.x - 1}-${startNode.y}`]: 1 }
+      ? {
+          [`${startNode.x - 1}-${startNode.y}`]: findWeight(
+            `${startNode.x - 1}-${startNode.y}`
+          ),
+        }
       : null;
 
   const distances: Distances = {
@@ -140,6 +183,11 @@ const Dijkstra = ({
   let node = findShortestDistanceNode(distances, analyzed);
 
   while (node) {
+    //emd case
+    if (node === `${endNode.x}-${endNode.y}`) {
+      break;
+    }
+
     //get the distance of the current node
     let distance = distances[node];
 
@@ -155,25 +203,25 @@ const Dijkstra = ({
 
     //top
     if (y - 1 >= 0 && !barriers.includes(`${x}-${y - 1}`)) {
-      children[`${x}-${y - 1}`] = 1;
+      children[`${x}-${y - 1}`] = findWeight(`${x}-${y - 1}`);
     }
     //right
     if (
       x + 1 < Math.floor(screenSize.width / (gridSize + 2)) &&
       !barriers.includes(`${x + 1}-${y}`)
     ) {
-      children[`${x + 1}-${y}`] = 1;
+      children[`${x + 1}-${y}`] = findWeight(`${x + 1}-${y}`);
     }
     //bottom
     if (
       y + 1 < Math.floor((screenSize.height - 64) / (gridSize + 2)) &&
       !barriers.includes(`${x}-${y + 1}`)
     ) {
-      children[`${x}-${y + 1}`] = 1;
+      children[`${x}-${y + 1}`] = findWeight(`${x}-${y + 1}`);
     }
     //left
     if (x - 1 >= 0 && !barriers.includes(`${x - 1}-${y}`)) {
-      children[`${x - 1}-${y}`] = 1;
+      children[`${x - 1}-${y}`] = findWeight(`${x - 1}-${y}`);
     }
 
     //loop through each child while calculating the distance to reach that child node. The distance of the node will only be updated if it is the lowest or the only distance
@@ -209,10 +257,6 @@ const Dijkstra = ({
     // ) {
     //   break;
     // }
-
-    if (node === `${endNode.x}-${endNode.y}`) {
-      break;
-    }
   }
 
   //now that we looped through each node and found the shortest distance through each, we can now find the optimal path through a final function that looks through the parent object
@@ -233,7 +277,11 @@ const Dijkstra = ({
 
   // console.log(dijkstrasResult);
 
-  return { analyzed, optimalPath };
+  return {
+    analyzed,
+    optimalPath,
+    distance:  distances[`${endNode.x}-${endNode.y}`] -1,
+  };
 };
 
 export default Dijkstra;
