@@ -50,6 +50,10 @@ interface IProps {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    title: {
+      fontWeight: 900,
+      color: "#fff",
+    },
     root: {
       flexGrow: 1,
     },
@@ -145,8 +149,8 @@ const ToolBar: React.FC<IProps> = React.memo(
         <AppBar position="static" className={classes.appBar} color="default">
           <Toolbar>
             <div className="app-bar">
-              <Typography variant="h6" className={classes.span}>
-                Algo Vision
+              <Typography variant="h5" className={classes.title}>
+                ALGO VISION
               </Typography>
 
               <div className="toolbar-speed">
@@ -198,7 +202,12 @@ const ToolBar: React.FC<IProps> = React.memo(
                     Recursive Division (vertical)
                   </MenuItem>
                   <MenuItem value={"spiral"}>Spiral</MenuItem>
-                  <MenuItem value={"random barriers"}>Random Barriers</MenuItem>
+                  <MenuItem
+                    disabled={algorithm === "breadth" || algorithm === "depth"}
+                    value={"random barriers"}
+                  >
+                    Random Barriers
+                  </MenuItem>
                   <MenuItem value={"random weights"}>Random Weights</MenuItem>
                 </Select>
               </div>
@@ -220,11 +229,18 @@ const ToolBar: React.FC<IProps> = React.memo(
                   disabled={isAnalyzing}
                 >
                   <MenuItem value={"barriers"}>Barriers</MenuItem>
-                  <MenuItem value={"weights"}>Weights</MenuItem>
+                  <MenuItem
+                    disabled={algorithm === "breadth" || algorithm === "depth"}
+                    value={"weights"}
+                  >
+                    Weights
+                  </MenuItem>
                 </Select>
               </div>
 
-              {leftClickState === "weights" ? (
+              {leftClickState === "weights" &&
+              algorithm !== "breadth" &&
+              algorithm !== "depth" ? (
                 <div className="toolbar-slider">
                   <Typography className={classes.span} id="discrete-slider">
                     Weight Size

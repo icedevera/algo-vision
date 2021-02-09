@@ -109,6 +109,13 @@ const Pathfinder: React.FC<IProps> = React.memo(
       "barriers" | "weights"
     >("barriers");
 
+    React.useEffect(() => {
+      if (algorithm === "breadth" || algorithm === "depth") {
+        setLeftClickState("barriers");
+        setWeights([]);
+      }
+    }, [algorithm]);
+
     const clearAnalysis = () => {
       setQuickAnalyze(false);
       let analyzing = document.getElementsByClassName("analyzing");

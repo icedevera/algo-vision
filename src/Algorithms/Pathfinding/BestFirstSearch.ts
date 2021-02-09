@@ -222,7 +222,7 @@ export const BestFirstSearch = async (
         neighbor.distanceFromStart = gScore;
         neighbor.priorityScore =
           type === "astar"
-            ? gScore + neighbor.distanceToEnd
+            ? neighbor.distanceFromStart + neighbor.distanceToEnd
             : neighbor.distanceToEnd + neighbor.cost;
 
         if (!beenVisited) {
