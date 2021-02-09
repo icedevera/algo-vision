@@ -25,6 +25,12 @@ import { Depth } from "../../../Algorithms/Pathfinding/Depth";
 import Snackbar from "@material-ui/core/Snackbar";
 import { IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import Button from "@material-ui/core/Button";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import ShowChartIcon from "@material-ui/icons/ShowChart";
+import ClearIcon from "@material-ui/icons/Clear";
+import RefreshIcon from "@material-ui/icons/Refresh";
 
 interface IProps {
   isDarkMode: boolean;
@@ -49,10 +55,29 @@ const useStyles = makeStyles((theme) => ({
   play: {
     color: "white",
   },
+  button: {
+    color:
+      theme.palette.type === "dark"
+        ? theme.palette.background.default
+        : "white",
+    backgroundColor:
+      theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+    "&:hover": {
+      color:
+        theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+      backgroundColor:
+        theme.palette.type === "dark" ? theme.palette.warning.main : "white",
+    },
+  },
+  clearButtons: {
+    position: "absolute",
+    bottom: "40px",
+  },
 }));
 
 const Pathfinder: React.FC<IProps> = React.memo(
   ({ screenSize, isDarkMode, toggleDarkMode }) => {
+    const mediaQuery = useMediaQuery("(max-width:550px)");
     const theme = useTheme();
     const classes = useStyles();
 
@@ -554,14 +579,38 @@ const Pathfinder: React.FC<IProps> = React.memo(
       setWeightSize(value);
     };
 
+    const randomizeStartEndNodes = () => {
+      let startX = Math.floor(
+        Math.random() * (Math.floor(screenSize.width / (gridSize + 2)) - 1)
+      );
+      let startY = Math.floor(
+        Math.random() *
+          (Math.floor((screenSize.height - 64) / (gridSize + 2)) - 1)
+      );
+      let endX = Math.floor(
+        Math.random() * (Math.floor(screenSize.width / (gridSize + 2)) - 1)
+      );
+      let endY = Math.floor(
+        Math.random() *
+          (Math.floor((screenSize.height - 64) / (gridSize + 2)) - 1)
+      );
+
+      setStartNode({
+        x: startX,
+        y: startY,
+      });
+
+      setEndNode({
+        x: endX,
+        y: endY,
+      });
+    };
+
     return (
       <>
         <ToolBar
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
-          resetGrid={resetGrid}
-          clearAnalysis={clearAnalysis}
-          cleanGrid={cleanGrid}
           onGridSizeCommitted={onGridSizeCommitted}
           gridSize={gridSize}
           animationSpeed={animationSpeed}
@@ -577,6 +626,7 @@ const Pathfinder: React.FC<IProps> = React.memo(
           leftClickState={leftClickState}
           weightSize={weightSize}
           onWeightSizeChange={onWeightSizeChange}
+          randomizeStartEndNodes={randomizeStartEndNodes}
         />
         <Snackbar
           anchorOrigin={{
@@ -630,6 +680,41 @@ const Pathfinder: React.FC<IProps> = React.memo(
             setWeights={setWeights}
             weights={weights}
           />
+          <div
+            className={classes.clearButtons}
+            style={{
+              left: mediaQuery ? "40px" : "calc(50% - 165px)",
+            }}
+          >
+            <ButtonGroup
+              variant="contained"
+              color="primary"
+              aria-label="contained primary button group"
+            >
+              <Button
+                className={classes.button}
+                onClick={clearAnalysis}
+                disabled={isAnalyzing}
+              >
+                {mediaQuery ? <ShowChartIcon /> : "Clear Analysis"}
+              </Button>
+              <Button
+                className={classes.button}
+                onClick={cleanGrid}
+                disabled={isAnalyzing}
+              >
+                {mediaQuery ? <ClearIcon /> : "Clear All"}
+              </Button>
+
+              <Button
+                className={classes.button}
+                onClick={resetGrid}
+                disabled={isAnalyzing}
+              >
+                {mediaQuery ? <RefreshIcon /> : "Reset"}
+              </Button>
+            </ButtonGroup>
+          </div>
           <div className={classes.runAlgorithm}>
             <Fab
               onClick={runAlgorithm}

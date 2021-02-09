@@ -2,6 +2,7 @@ import React from "react";
 
 import "./cell.css";
 import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 type coordinates = {
   x: number;
@@ -292,6 +293,8 @@ const Cell: React.FC<IProps> = React.memo(
       return;
     };
 
+    const isMobile = useMediaQuery("(max-width:768px)");
+
     return (
       <div
         id={id}
@@ -300,10 +303,14 @@ const Cell: React.FC<IProps> = React.memo(
             theme.palette.type === "dark"
               ? `1px solid ${theme.palette.grey[800]}`
               : `1px solid ${theme.palette.grey[300]}`,
-          cursor:
-            isStartNode || isEndNode || isStartNodeDragging || isEndNodeDragging
-              ? "move"
-              : "default",
+          cursor: isMobile
+            ? "pointer"
+            : isStartNode ||
+              isEndNode ||
+              isStartNodeDragging ||
+              isEndNodeDragging
+            ? "move"
+            : "default",
           width: `${gridSize}px`,
           height: `${gridSize}px`,
         }}

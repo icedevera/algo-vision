@@ -5,6 +5,19 @@
   align-items: center;
 }
 
+.logo-title {
+  height: 60px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.algo-logo {
+  height: 80%;
+  margin-right: 10px;
+}
+
 .toolbar-slider {
   display: flex;
   flex-flow: column nowrap;
@@ -52,4 +65,32 @@
 
 .light-switch:active {
   transform: scale(0.9);
+}
+
+.burger-button {
+  cursor: pointer;
+}
+
+@media (max-width: 1150px) {
+  .toolbar-speed {
+    display: none;
+  }
+
+  .left-click-state {
+    display: none;
+  }
+
+  .toolbar-slider {
+    display: none;
+  }
+
+  .light-switch {
+    display: none;
+  }
+}
+
+@media (min-width: 1151px) {
+  .burger-button {
+    display: none;
+  }
 }

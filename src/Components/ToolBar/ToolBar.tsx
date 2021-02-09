@@ -12,22 +12,22 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Slider from "@material-ui/core/Slider";
 import { Brightness4, Brightness7 } from "@material-ui/icons";
-import Button from "@material-ui/core/Button";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
+import logo from "../../Assets/logo.svg";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import Drawer from "@material-ui/core/Drawer";
+import DrawerMenu from "./DrawerMenu/DrawerMenu";
 
 interface IProps {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
-  cleanGrid: () => void;
-  resetGrid: () => void;
   onGridSizeCommitted: (event: object, value: number) => void;
   gridSize: number;
   setAnimationSpeed: React.Dispatch<any>;
   animationSpeed: number;
-  clearAnalysis: () => void;
   setMaze: React.Dispatch<any>;
   maze:
     | "none"
@@ -46,6 +46,7 @@ interface IProps {
   leftClickState: "barriers" | "weights";
   weightSize: number;
   onWeightSizeChange: (event: object, value: number) => void;
+  randomizeStartEndNodes: () => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -68,20 +69,6 @@ const useStyles = makeStyles((theme: Theme) =>
         theme.palette.type === "dark"
           ? theme.palette.background.default
           : "#1976d2",
-    },
-    button: {
-      color:
-        theme.palette.type === "dark"
-          ? theme.palette.background.default
-          : "white",
-      backgroundColor:
-        theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
-      "&:hover": {
-        color:
-          theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
-        backgroundColor:
-          theme.palette.type === "dark" ? theme.palette.warning.main : "white",
-      },
     },
 
     slider: {
@@ -108,6 +95,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fill:
         theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
     },
+    menuButton: {},
   })
 );
 
@@ -115,9 +103,6 @@ const ToolBar: React.FC<IProps> = React.memo(
   ({
     isDarkMode,
     toggleDarkMode,
-    resetGrid,
-    cleanGrid,
-    clearAnalysis,
     onGridSizeCommitted,
     gridSize,
     animationSpeed,
@@ -131,6 +116,7 @@ const ToolBar: React.FC<IProps> = React.memo(
     leftClickState,
     weightSize,
     onWeightSizeChange,
+    randomizeStartEndNodes
   }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
@@ -144,14 +130,27 @@ const ToolBar: React.FC<IProps> = React.memo(
       },
     })(Slider);
 
+    const [drawerState, setDrawerState] = React.useState<boolean>(false);
+
+    const toggleDrawer = () => {
+      setDrawerState(!drawerState);
+    };
+
     return (
       <div className={classes.root}>
         <AppBar position="static" className={classes.appBar} color="default">
           <Toolbar>
             <div className="app-bar">
-              <Typography variant="h5" className={classes.title}>
-                ALGO VISION
-              </Typography>
+              <div className="logo-title">
+                <img
+                  className="algo-logo"
+                  src={logo}
+                  alt="algo vision heading"
+                />
+                <Typography variant="h5" className={classes.title}>
+                  ALGO VISION
+                </Typography>
+              </div>
 
               <div className="toolbar-speed">
                 <InputLabel style={{ color: "#fff" }} id="set-algo">
@@ -310,35 +309,6 @@ const ToolBar: React.FC<IProps> = React.memo(
                 </Select>
               </div>
 
-              <ButtonGroup
-                variant="contained"
-                color="primary"
-                aria-label="contained primary button group"
-              >
-                <Button
-                  className={classes.button}
-                  onClick={clearAnalysis}
-                  disabled={isAnalyzing}
-                >
-                  Clear Analysis
-                </Button>
-                <Button
-                  className={classes.button}
-                  onClick={cleanGrid}
-                  disabled={isAnalyzing}
-                >
-                  Clear All
-                </Button>
-
-                <Button
-                  className={classes.button}
-                  onClick={resetGrid}
-                  disabled={isAnalyzing}
-                >
-                  Reset
-                </Button>
-              </ButtonGroup>
-
               <button
                 onClick={toggleDarkMode}
                 className="light-switch"
@@ -359,6 +329,39 @@ const ToolBar: React.FC<IProps> = React.memo(
                 )}
               </button>
             </div>
+
+            <div className="burger-button">
+              <IconButton
+                edge="start"
+                className={classes.menuButton}
+                color="inherit"
+                aria-label="menu"
+                onClick={() => setDrawerState(true)}
+              >
+                <MenuIcon fontSize="large" />
+              </IconButton>
+            </div>
+
+            <Drawer anchor="right" open={drawerState} onClose={toggleDrawer}>
+              <DrawerMenu
+                isDarkMode={isDarkMode}
+                toggleDarkMode={toggleDarkMode}
+                onGridSizeCommitted={onGridSizeCommitted}
+                gridSize={gridSize}
+                animationSpeed={animationSpeed}
+                maze={maze}
+                handleSpeedChange={handleSpeedChange}
+                handleMazeChange={handleMazeChange}
+                isAnalyzing={isAnalyzing}
+                algorithm={algorithm}
+                handleAlgoChange={handleAlgoChange}
+                handleLeftClickState={handleLeftClickState}
+                leftClickState={leftClickState}
+                weightSize={weightSize}
+                onWeightSizeChange={onWeightSizeChange}
+                randomizeStartEndNodes={randomizeStartEndNodes}
+              />
+            </Drawer>
           </Toolbar>
         </AppBar>
       </div>
