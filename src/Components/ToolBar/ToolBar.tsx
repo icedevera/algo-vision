@@ -16,6 +16,7 @@ import Button from "@material-ui/core/Button";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 
 interface IProps {
   isDarkMode: boolean;
@@ -39,7 +40,7 @@ interface IProps {
   handleSpeedChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   handleMazeChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   isAnalyzing: boolean;
-  algorithm: "aStar" | "dijkstra" | "greedy";
+  algorithm: "aStar" | "dijkstra" | "greedy" | "breadth" | "depth";
   handleAlgoChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
   handleLeftClickState: (event: React.ChangeEvent<{ value: unknown }>) => void;
   leftClickState: "barriers" | "weights";
@@ -71,6 +72,12 @@ const useStyles = makeStyles((theme: Theme) =>
           : "white",
       backgroundColor:
         theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+      "&:hover": {
+        color:
+          theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+        backgroundColor:
+          theme.palette.type === "dark" ? theme.palette.warning.main : "white",
+      },
     },
 
     slider: {
@@ -139,7 +146,7 @@ const ToolBar: React.FC<IProps> = React.memo(
           <Toolbar>
             <div className="app-bar">
               <Typography variant="h6" className={classes.span}>
-                Algorithm Visualizer
+                Algo Vision
               </Typography>
 
               <div className="toolbar-speed">
@@ -161,6 +168,8 @@ const ToolBar: React.FC<IProps> = React.memo(
                   <MenuItem value={"aStar"}>A* Search</MenuItem>
                   <MenuItem value={"dijkstra"}>Dijkstra's Algorithm</MenuItem>
                   <MenuItem value={"greedy"}>Greedy Best-first Search</MenuItem>
+                  <MenuItem value={"breadth"}>Breadth-first Search</MenuItem>
+                  <MenuItem value={"depth"}>Depth-first Search</MenuItem>
                 </Select>
               </div>
 
@@ -285,32 +294,34 @@ const ToolBar: React.FC<IProps> = React.memo(
                 </Select>
               </div>
 
-              <Button
-                className={classes.button}
-                onClick={clearAnalysis}
+              <ButtonGroup
                 variant="contained"
-                disabled={isAnalyzing}
+                color="primary"
+                aria-label="contained primary button group"
               >
-                Clear Analysis
-              </Button>
+                <Button
+                  className={classes.button}
+                  onClick={clearAnalysis}
+                  disabled={isAnalyzing}
+                >
+                  Clear Analysis
+                </Button>
+                <Button
+                  className={classes.button}
+                  onClick={cleanGrid}
+                  disabled={isAnalyzing}
+                >
+                  Clear All
+                </Button>
 
-              <Button
-                className={classes.button}
-                onClick={cleanGrid}
-                variant="contained"
-                disabled={isAnalyzing}
-              >
-                Clear All
-              </Button>
-
-              <Button
-                className={classes.button}
-                onClick={resetGrid}
-                variant="contained"
-                disabled={isAnalyzing}
-              >
-                Reset
-              </Button>
+                <Button
+                  className={classes.button}
+                  onClick={resetGrid}
+                  disabled={isAnalyzing}
+                >
+                  Reset
+                </Button>
+              </ButtonGroup>
 
               <button
                 onClick={toggleDarkMode}

@@ -175,7 +175,11 @@ export const BestFirstSearch = async (
 
       optimalPath = returnValue.reverse();
 
-      return { analyzed, optimalPath, distance: distance };
+      return {
+        analyzed,
+        optimalPath,
+        distance: distance !== 0 ? distance : Infinity,
+      };
     }
 
     //Normal case -- move currentNode from open to closed and process its neighbors
@@ -233,5 +237,9 @@ export const BestFirstSearch = async (
     }
   }
 
-  return { analyzed, optimalPath, distance: distance };
+  return {
+    analyzed,
+    optimalPath,
+    distance: distance !== 0 ? distance : Infinity,
+  };
 };

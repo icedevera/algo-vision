@@ -20,6 +20,8 @@ import { RandomMaze } from "../../../Maze/Random";
 import { SpiralMaze } from "../../../Maze/Spiral";
 import { aStarIsBorn } from "../../../Algorithms/Pathfinding/aStar";
 import { GreedyBFS } from "../../../Algorithms/Pathfinding/GreedyBFS";
+import { Breadth } from "../../../Algorithms/Pathfinding/Breadth";
+import { Depth } from "../../../Algorithms/Pathfinding/Depth";
 import Snackbar from "@material-ui/core/Snackbar";
 import { IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
@@ -94,7 +96,7 @@ const Pathfinder: React.FC<IProps> = React.memo(
     >("none");
 
     const [algorithm, setAlgorithm] = React.useState<
-      "aStar" | "dijkstra" | "greedy"
+      "aStar" | "dijkstra" | "greedy" | "breadth" | "depth"
     >("dijkstra");
 
     const [openResults, setOpenResults] = React.useState<boolean>(false);
@@ -234,6 +236,26 @@ const Pathfinder: React.FC<IProps> = React.memo(
           weights
         );
         endTime = performance.now();
+      } else if (algorithm === "breadth") {
+        results = await Breadth(
+          startNode,
+          endNode,
+          barriers,
+          "breadth",
+          totalRows,
+          totalColumns
+        );
+        endTime = performance.now();
+      } else if (algorithm === "depth") {
+        results = await Depth(
+          startNode,
+          endNode,
+          barriers,
+          "depth",
+          totalRows,
+          totalColumns
+        );
+        endTime = performance.now();
       }
 
       if (results) {
@@ -310,7 +332,28 @@ const Pathfinder: React.FC<IProps> = React.memo(
             weights
           );
           endTime = performance.now();
+        } else if (algorithm === "breadth") {
+          results = await Breadth(
+            startNode,
+            endNode,
+            barriers,
+            "breadth",
+            totalRows,
+            totalColumns
+          );
+          endTime = performance.now();
+        } else if (algorithm === "depth") {
+          results = await Depth(
+            startNode,
+            endNode,
+            barriers,
+            "depth",
+            totalRows,
+            totalColumns
+          );
+          endTime = performance.now();
         }
+
         if (results) {
           showAlgorithm(results.analyzed, startNode, endNode);
           showShortestPath(results.optimalPath, startNode, endNode);

@@ -150,6 +150,6 @@ export const animateRandomWeightMaze = (
       if (i === weights.length - 1) {
         setIsAnalyzing(false);
       }
-    }, animationSpeed * 2 * i);
+    }, animationSpeed / 2);
   }
 };
