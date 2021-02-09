@@ -20,6 +20,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
 import DrawerMenu from "./DrawerMenu/DrawerMenu";
+import InfoIcon from "@material-ui/icons/Info";
 
 interface IProps {
   isDarkMode: boolean;
@@ -47,6 +48,7 @@ interface IProps {
   weightSize: number;
   onWeightSizeChange: (event: object, value: number) => void;
   randomizeStartEndNodes: () => void;
+  handleInfoModalOpen: () => void;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -54,6 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       fontWeight: 900,
       color: "#fff",
+      marginRight: "15px",
     },
     root: {
       flexGrow: 1,
@@ -70,7 +73,6 @@ const useStyles = makeStyles((theme: Theme) =>
           ? theme.palette.background.default
           : "#1976d2",
     },
-
     slider: {
       color:
         theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
@@ -95,7 +97,10 @@ const useStyles = makeStyles((theme: Theme) =>
       fill:
         theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
     },
-    menuButton: {},
+    infoIcon: {
+      color:
+        theme.palette.type === "dark" ? "white" : theme.palette.warning.main,
+    },
   })
 );
 
@@ -116,7 +121,8 @@ const ToolBar: React.FC<IProps> = React.memo(
     leftClickState,
     weightSize,
     onWeightSizeChange,
-    randomizeStartEndNodes
+    randomizeStartEndNodes,
+    handleInfoModalOpen,
   }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
@@ -150,6 +156,13 @@ const ToolBar: React.FC<IProps> = React.memo(
                 <Typography variant="h5" className={classes.title}>
                   ALGO VISION
                 </Typography>
+
+                <IconButton
+                  className={classes.infoIcon}
+                  onClick={handleInfoModalOpen}
+                >
+                  <InfoIcon />
+                </IconButton>
               </div>
 
               <div className="toolbar-speed">
@@ -333,7 +346,6 @@ const ToolBar: React.FC<IProps> = React.memo(
             <div className="burger-button">
               <IconButton
                 edge="start"
-                className={classes.menuButton}
                 color="inherit"
                 aria-label="menu"
                 onClick={() => setDrawerState(true)}

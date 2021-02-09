@@ -15,9 +15,9 @@ import {
   showAlgorithm,
   showShortestPath,
 } from "../../../Animation/Animate";
-import { recursiveDivisionMaze } from "../../../Maze/RecursizeDivision";
-import { RandomMaze } from "../../../Maze/Random";
-import { SpiralMaze } from "../../../Maze/Spiral";
+import { recursiveDivisionMaze } from "../../../Algorithms/Pathfinding/Maze/RecursizeDivision";
+import { RandomMaze } from "../../../Algorithms/Pathfinding/Maze/Random";
+import { SpiralMaze } from "../../../Algorithms/Pathfinding/Maze/Spiral";
 import { aStarIsBorn } from "../../../Algorithms/Pathfinding/aStar";
 import { GreedyBFS } from "../../../Algorithms/Pathfinding/GreedyBFS";
 import { Breadth } from "../../../Algorithms/Pathfinding/Breadth";
@@ -31,6 +31,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ShowChartIcon from "@material-ui/icons/ShowChart";
 import ClearIcon from "@material-ui/icons/Clear";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import InfoModal from "../../InfoModal/InfoModal";
 
 interface IProps {
   isDarkMode: boolean;
@@ -606,6 +607,16 @@ const Pathfinder: React.FC<IProps> = React.memo(
       });
     };
 
+    const [infoModalOpen, setInfoModalOpen] = React.useState<boolean>(true);
+
+    const handleInfoModalOpen = () => {
+      setInfoModalOpen(true);
+    };
+
+    const handleInfoModalClose = () => {
+      setInfoModalOpen(false);
+    };
+
     return (
       <>
         <ToolBar
@@ -627,6 +638,11 @@ const Pathfinder: React.FC<IProps> = React.memo(
           weightSize={weightSize}
           onWeightSizeChange={onWeightSizeChange}
           randomizeStartEndNodes={randomizeStartEndNodes}
+          handleInfoModalOpen={handleInfoModalOpen}
+        />
+        <InfoModal
+          infoModalOpen={infoModalOpen}
+          handleInfoModalClose={handleInfoModalClose}
         />
         <Snackbar
           anchorOrigin={{
