@@ -153,7 +153,10 @@ const ToolBar: React.FC<IProps> = React.memo(
         <AppBar position="static" className={classes.appBar} color="default">
           <Toolbar disableGutters={mobile}>
             <div className="app-bar">
-              <div className="logo-title">
+              <div
+                className="logo-title"
+                onClick={() => window.location.reload()}
+              >
                 <img
                   className="algo-logo"
                   src={logo}
@@ -170,7 +173,6 @@ const ToolBar: React.FC<IProps> = React.memo(
                   <InfoIcon />
                 </IconButton>
               </div>
-
               <div className="toolbar-speed">
                 <InputLabel style={{ color: "#fff" }} id="set-algo">
                   Algorithm
@@ -194,7 +196,6 @@ const ToolBar: React.FC<IProps> = React.memo(
                   <MenuItem value={"depth"}>Depth-first Search</MenuItem>
                 </Select>
               </div>
-
               <div className="toolbar-speed">
                 <InputLabel style={{ color: "#fff" }} id="set-maze">
                   Mazes & Patterns
@@ -229,7 +230,6 @@ const ToolBar: React.FC<IProps> = React.memo(
                   <MenuItem value={"random weights"}>Random Weights</MenuItem>
                 </Select>
               </div>
-
               <div className="left-click-state">
                 <InputLabel style={{ color: "#fff" }} id="set-maze">
                   Left Click Action
@@ -255,7 +255,6 @@ const ToolBar: React.FC<IProps> = React.memo(
                   </MenuItem>
                 </Select>
               </div>
-
               {leftClickState === "weights" &&
               algorithm !== "breadth" &&
               algorithm !== "depth" ? (
@@ -280,7 +279,6 @@ const ToolBar: React.FC<IProps> = React.memo(
                   />
                 </div>
               ) : null}
-
               <div className="toolbar-slider">
                 <Typography className={classes.span} id="discrete-slider">
                   Grid Size
@@ -301,7 +299,6 @@ const ToolBar: React.FC<IProps> = React.memo(
                   disabled={isAnalyzing}
                 />
               </div>
-
               <div className="toolbar-speed">
                 <InputLabel style={{ color: "#fff" }} id="set-speed">
                   Animation Speed
@@ -327,7 +324,6 @@ const ToolBar: React.FC<IProps> = React.memo(
                   <MenuItem value={0}>Lightning</MenuItem>
                 </Select>
               </div>
-
               <button
                 onClick={toggleDarkMode}
                 className="light-switch"

@@ -86,6 +86,6 @@ hypnotized!
 
 Places barriers or weights randomly on the grid.
 
-### `More info on the app's usage can be found on the [website](https://www.algovision.io)`
+### More info on the app's usage can be found on the [website](https://www.algovision.io)
 
 # Enjoy!
