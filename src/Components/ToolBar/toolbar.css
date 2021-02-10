@@ -18,6 +18,12 @@
   margin-right: 10px;
 }
 
+@media (max-width: 350px) {
+  .algo-logo {
+    margin-left: 10px;
+  }
+}
+
 .toolbar-slider {
   display: flex;
   flex-flow: column nowrap;

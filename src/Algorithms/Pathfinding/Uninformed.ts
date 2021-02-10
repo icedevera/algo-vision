@@ -89,8 +89,6 @@ export const UninformedAlgorithm = (
 
     //end case return optimal path
     if (currentNode.node === `${endNode.x}-${endNode.y}`) {
-      console.log(`${endNode.x}-${endNode.y}`);
-      console.log(structure);
       let current = currentNode;
       let returnValue = [];
 

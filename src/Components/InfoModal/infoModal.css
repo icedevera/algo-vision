@@ -1,0 +1,70 @@
+.heading-container {
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.source-code {
+  color: none;
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  outline: none;
+}
+
+.heading-icon {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.introduction-text {
+  margin-top: 40px;
+  text-indent: 40px;
+}
+
+.algorithm-information {
+  margin-top: 15px;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+}
+
+.tutorial-information {
+  margin-top: 15px;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+}
+
+.gif-description {
+  display: flex;
+  flex-flow: column nowrap;
+  width: 95%;
+}
+
+.tutorial-gif {
+  margin-top: 10px;
+  width: 80%;
+}
+
+@media (max-width: 800px) {
+  .tutorial-gif {
+    width: 100%;
+  }
+}
+
+@media (max-width: 350px) {
+  .heading-container {
+    flex-flow: column nowrap;
+  }
+  .source-code {
+    position: relative;
+    align-self: flex-end;
+  }
+
+  .heading-icon {
+    margin: 10px 0;
+  }
+}

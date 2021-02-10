@@ -21,6 +21,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Drawer from "@material-ui/core/Drawer";
 import DrawerMenu from "./DrawerMenu/DrawerMenu";
 import InfoIcon from "@material-ui/icons/Info";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 interface IProps {
   isDarkMode: boolean;
@@ -57,6 +58,9 @@ const useStyles = makeStyles((theme: Theme) =>
       fontWeight: 900,
       color: "#fff",
       marginRight: "15px",
+      [theme.breakpoints.down("xs")]: {
+        marginRight: 0,
+      },
     },
     root: {
       flexGrow: 1,
@@ -142,10 +146,12 @@ const ToolBar: React.FC<IProps> = React.memo(
       setDrawerState(!drawerState);
     };
 
+    const mobile = useMediaQuery("(max-width:350px)");
+
     return (
       <div className={classes.root}>
         <AppBar position="static" className={classes.appBar} color="default">
-          <Toolbar>
+          <Toolbar disableGutters={mobile}>
             <div className="app-bar">
               <div className="logo-title">
                 <img
