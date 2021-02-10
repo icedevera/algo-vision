@@ -1,4 +1,6 @@
-**This project was built with create-react-app, material-ui and typescript**
+**This project was built with create-react-app, material-ui and typescript.**
+
+https://www.algovision.io
 
 # Welcome to Algo Vision!
 
@@ -15,6 +17,8 @@ processed data into a human comprehensible one. Therefore, as
 you interact with the program, I urge you to realize the
 artistry of mere zeroes and ones orchestrated to optimize the
 world.
+
+### Check out the site [here](https://www.algovision.io)
 
 ## Meet the Algorithms
 
@@ -81,5 +85,7 @@ hypnotized!
 ### `Random Barriers or Weights`
 
 Places barriers or weights randomly on the grid.
+
+### `More info on the app's usage can be found on the [website](https://www.algovision.io)`
 
 # Enjoy!
