@@ -153,18 +153,20 @@ const ToolBar: React.FC<IProps> = React.memo(
         <AppBar position="static" className={classes.appBar} color="default">
           <Toolbar disableGutters={mobile}>
             <div className="app-bar">
-              <div
-                className="logo-title"
-                onClick={() => window.location.reload()}
-              >
-                <img
-                  className="algo-logo"
-                  src={logo}
-                  alt="algo vision heading"
-                />
-                <Typography variant="h5" className={classes.title}>
-                  ALGO VISION
-                </Typography>
+              <div className="logo-title-info">
+                <div
+                  className="logo-title"
+                  onClick={() => window.location.reload()}
+                >
+                  <img
+                    className="algo-logo"
+                    src={logo}
+                    alt="algo vision heading"
+                  />
+                  <Typography variant="h5" className={classes.title}>
+                    ALGO VISION
+                  </Typography>
+                </div>
 
                 <IconButton
                   className={classes.infoIcon}

@@ -7,11 +7,20 @@
 
 .logo-title {
   height: 60px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+}
+
+.logo-title-info {
+  height: 60px;
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
 }
 
 .algo-logo {
