@@ -239,7 +239,7 @@ const InfoModal: React.FC<IProps> = ({
                   variant="h4"
                   style={{ fontWeight: "bolder" }}
                 >
-                  Meet the algorithms
+                  Meet the Algorithms
                 </Typography>
               </div>
               <div className="algorithm-information">

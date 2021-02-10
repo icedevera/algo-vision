@@ -1,46 +1,85 @@
-# Getting Started with Create React App
+**This project was built with create-react-app, material-ui and typescript**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Welcome to Algo Vision!
 
-## Available Scripts
+The Algo Vision project is an extensive algorithm visualizer
+with the goal of enabling humans to understand and experience
+the beauty of algorithms past the zeroes and ones. It has been
+proven that humans respond and process visual data better than
+any other form of data. In fact, the human computer (the
+brain) processes images 60,000 times faster than plain text.
+Humans are so visually oriented that 90 percent of information
+transmitted to the brain is visual. Hence, Algo Vision was
+created as a form of "translator", which relays computer
+processed data into a human comprehensible one. Therefore, as
+you interact with the program, I urge you to realize the
+artistry of mere zeroes and ones orchestrated to optimize the
+world.
 
-In the project directory, you can run:
+## Meet the Algorithms
 
-### `yarn start`
+### `Dijkstra's`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+A weighted algorithm that guarantees the shortest path. Dijkstra's is one of the most famous algorithms for finding the shortest path between nodes. Some even consider it to be the father of pathinding algorithms. The algorithm finds the shortest distance neighboring node that has been unvisited and updates the distance if it's the shortest one so far. Once it has done this for all the nodes, it picks the shortest one to the target and traces back to the start node to reveal the shortest path.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### `A* Search`
 
-### `yarn test`
+A weighted algorithm that guarantees the shortest path.
+Arguably the most efficient way to find a shortest path. A\* is
+derived from Dijkstra's but uses a heuristic (total distance
+from start node to end node) in order to determine which node
+to analyze. Analysis becomes even quicker if incorporated with
+a binary min-heap (utilized in this project).
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### `Greedy Best-first Search`
 
-### `yarn build`
+A weighted algorithm that does not guarantee the shortest
+path. The Greedy Best-first Search algorithm is similar to A\*
+but rather than using the total distance as the heuristic for
+determining which nodes to analyze, it uses the distance to
+the end node. This makes analysis much quicker, but also
+sacrifices the guarantee of resulting in the optimal path.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### `Breadth-first Search (BFS)`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+A non-weighted algorithm that guarantees the shortest path.
+This algorithm utilizes a tree data structure in order to
+traverse and anlayze the nodes. It runs through each nodes
+starting at the top depth of the tree and works its way to the
+bottom until it reaches the end node.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `Depth-first Search (DFS)`
 
-### `yarn eject`
+A non-weighted algorithm that does not guarantee the shortest
+path. The Depth-first Search algorithm is similar to BFS, but
+instead of starting at the top of the tree it starts from the
+bottom. Tt is not the most efficient algorithm, but it has its
+use-cases such as topological sorting, scheduling problems,
+cycle detection, and solving puzzles with exactly one solution
+like soduku.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Fun with Mazes!
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### `Recursive Division`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+This algorithm constructs a maze through a recursive process.
+A recusive process is basically repeating the same function
+until an end case is reached. To generate a maze recursively,
+this algorithm draws a line on a random coordinate leaving one
+node empty. It then repeats this process until the graph its
+working with does not allow it to draw any more lines. This
+algorithm determines whether to draw a horizontal or vertical
+line depending on the ratio of the remaining graph's width and
+height.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### `Spiral`
 
-## Learn More
+An interesting mathematical pattern that generates the longest
+possible maze path on the given grid. Be careful not to get
+hypnotized!
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### `Random Barriers or Weights`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Places barriers or weights randomly on the grid.
+
+# Enjoy!
