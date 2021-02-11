@@ -86,10 +86,9 @@ const useStyles = makeStyles((theme: Theme) =>
       zIndex: 100,
     },
     offline: {
-      position: "absolute",
-      bottom: "10px",
-      left: "0",
-      fontStyle: "italic"
+      marginTop: "50px",
+      fontStyle: "italic",
+      textIndent: "0px"
     },
   })
 );
