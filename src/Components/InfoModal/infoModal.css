@@ -55,6 +55,12 @@
   }
 }
 
+@media (max-width: 425px) {
+  .source-code {
+    right: 0;
+  }
+}
+
 @media (max-width: 350px) {
   .heading-container {
     flex-flow: column nowrap;

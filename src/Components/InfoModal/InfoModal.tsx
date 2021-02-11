@@ -85,6 +85,12 @@ const useStyles = makeStyles((theme: Theme) =>
       right: "20px",
       zIndex: 100,
     },
+    offline: {
+      position: "absolute",
+      bottom: "10px",
+      left: "0",
+      fontStyle: "italic"
+    },
   })
 );
 
@@ -101,8 +107,8 @@ const TabPanel = (props: TabPanelProps) => {
     <div
       role="tabpanel"
       hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
+      id={`info-tabpanel-${index}`}
+      aria-labelledby={`info-tab-${index}`}
       {...other}
     >
       {value === index && (
@@ -210,7 +216,7 @@ const InfoModal: React.FC<IProps> = ({
                 </Typography>
               </div>
               <div className="introduction-text">
-                <Typography color="textPrimary" variant="h6">
+                <Typography color="textPrimary" variant="h5">
                   The Algo Vision project is an extensive algorithm visualizer
                   with the goal of enabling humans to understand and experience
                   the beauty of algorithms past the zeroes and ones. It has been
@@ -224,6 +230,13 @@ const InfoModal: React.FC<IProps> = ({
                   you interact with the program, I urge you to realize the
                   artistry of mere zeroes and ones orchestrated to optimize the
                   world.
+                </Typography>
+                <Typography
+                  className={classes.offline}
+                  color="textPrimary"
+                  variant="body1"
+                >
+                  *Algo Vision is a PWA which means it works offline!
                 </Typography>
               </div>
             </TabPanel>
