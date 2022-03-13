@@ -46,7 +46,9 @@
 
 .tutorial-gif {
   margin-top: 10px;
-  width: 80%;
+  object-fit: contain;
+  max-width: auto;
+  max-height: 400px;
 }
 
 @media (max-width: 800px) {
